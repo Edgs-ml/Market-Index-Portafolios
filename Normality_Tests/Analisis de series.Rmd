@@ -1,0 +1,158 @@
+
+```{r Librerias}
+library(readxl)
+library(fBasics)#Analisis estadistico
+library(aTSA)#Raiz Unitaria
+library(tseries)#Raiz Unitaria
+library(naniar)#remueve Nas
+library(tidyverse)#Ya incluye read excel
+library(PerformanceAnalytics)
+library(textshape)
+library(QuantPsyc)#Pruba multivariada de normlaidad
+library(statmod)
+library(ghyp)#multivariado NIG
+library(cramer)#Pruba cramer NIG multivariada
+```
+
+#Las series no son normles ni estacionarias
+
+```{r Datos, y forma de df}
+g1<- read_excel("C:/Users/juanl/Desktop/paper/Bases de datos/Series de grupos/g1.xls")
+
+colnames(g1)<-c("Fecha","OMX 20","STI","FTSE 100","HSI","DJI")
+
+g1<-textshape::column_to_rownames(g1,loc=1)
+
+```
+
+```{r Limpieza de base}
+g1<-drop_na(g1)
+glimpse(g1)
+#View(g1)
+
+```
+
+```{r Retornos}
+retornos<-Return.calculate(g1,method = "log")
+retornos<-drop_na(retornos)
+```
+
+```{r Estadistica de los retornos}
+Estg1<-basicStats(retornos)
+Estg1
+```
+
+
+```{r Prueba de raiz unitaria}
+adf.test(retornos$STI)
+adf.test(retornos$OMX.20)
+adf.test(retornos$FTSE.100)
+adf.test(retornos$HSI)
+adf.test(retornos$DJI)
+
+#Todas las series son estacionarias
+```
+
+```{r Pruebas de normalidad univariadas}
+#Shapiro Wilk
+  shapiro.test(retornos$OMX.20)
+  shapiro.test(retornos$STI)
+  shapiro.test(retornos$FTSE.100)
+  shapiro.test(retornos$HSI)
+  shapiro.test(retornos$DJI)
+
+#Shapiro Francia
+  sfTest(retornos$OMX.20)
+  sfTest(retornos$STI)
+  sfTest(retornos$FTSE.100)
+  sfTest(retornos$HSI)
+  sfTest(retornos$DJI)
+
+#Construccion de normal con parametros multivariados de la series
+  m<-mean(retornos$OMX.20)
+  sd<-sd(retornos$OMX.20)
+  len<-length(retornos$OMX.20)
+  basenormal<-rnorm(len,m,sd)#normal con los parametros de nuestras series
+
+#Prubas de Kormogorov contra distribucion normal, creada con paramaetros de nuestra serie 
+  ks.test(retornos$OMX.20,basenormal)
+  ks.test(retornos$STI,basenormal)
+  ks.test(retornos$FTSE.100,basenormal)
+  ks.test(retornos$HSI,basenormal)
+  ks.test(retornos$DJI,basenormal)
+#Ninguna de las series es normal
+```
+
+```{r Pruba de normalidad multivariada}
+  mult.norm(retornos)$mult.test
+#De forma multivariada no hay normalidad
+```
+
+```{r Series contra normal}
+
+plot(density(retornos$OMX.20),col="blue",ylim=c(0,60), main="Distribuciones contra normal")+
+    lines(density(retornos$STI),
+        col="green")+
+    lines(density(retornos$FTSE.100),
+        col="orange")+
+    lines(density(retornos$HSI),
+        col="black")+
+    lines(density(retornos$DJI),
+        col="grey")+
+  lines(density(basenormal),
+        col="red")
+```
+
+```{r Construccion de NIG univariada}
+#Parametros de la NIG
+  NIG<-nigFit(retornos$STI)
+
+#Agrupar parametros en un objeto
+   a<-NIG@fit[["par"]]
+   a<-data.frame(t(a))
+   
+#NIG aleatoria con parametors univariados de nuestra serie
+   r = rnig(len,
+            alpha = a$alpha , 
+            beta = a$beta, 
+            delta = a$delta ,
+            mu= a$mu)
+   plot(density(r),
+        col="red",
+        main="NIG Univariada",
+        sub="STI index")
+   
+#Pruba de Kormogorov univariada para NIG
+ ks.test(retornos$STI,r)
+```
+
+```{r Construccion  NIG multivariada}
+#Parametros para NIG Multivariada
+  multNIG<-fit.NIGmv(data=retornos,silent=FALSE)
+
+#Localizar parametros dentor de un obejto
+  Mom1NIGm<-multNIG@expected.value
+  Mom2NIGm<-multNIG@variance
+
+#Construccion de la funcion NIG con nuestros  parametros de la funcion multivariada
+  Mnig <- rghyp(len,multNIG)
+  retornos1<-as.matrix(retornos)
+
+#Prueba cramer de comprobacion
+  #Se buscan similitudes estadisticas
+  cramer.test(Mnig,retornos1,conf.level = .95)
+
+#Graficas de NIG Multivariada
+  plot(density(Mnig),
+       col="red",ylim=c(0,60),main="Distribuciones contra NIG multivariada")+
+    lines(density(retornos$OMX.20),
+          col="green")+
+    lines(density(retornos$FTSE.100),
+          col="purple")+
+    lines(density(retornos$HSI),
+          col="black")+
+    lines(density(retornos$DJI),
+          col="dark blue")+
+    lines(density(retornos$STI),
+          col="pink")
+```
