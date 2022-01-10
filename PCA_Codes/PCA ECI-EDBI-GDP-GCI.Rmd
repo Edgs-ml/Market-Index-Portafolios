@@ -1,0 +1,98 @@
+---
+title: "PCA ECI-EDBI-GDP-GCI"
+author: "Edgar Sigfrido Soto Aparicio"
+date: "7/23/2021"
+output: html_document
+---
+
+```{r}
+#Parte 1: Librerias y datos
+attach(Criterios_Unificado)
+library(textshape)
+Criterios_Unificado<- textshape::column_to_rownames(Criterios_Unificado, loc = 1)
+summary(Criterios_Unificado)
+skew(Criterios_Unificado)
+head(Criterios_Unificado)
+library(ggplot2)
+qplot(Criterios_Unificado$GCI,geom="histogram", main = "GCI distribution", xlab = "GCI", col=I("red"))
+summary(Criterios_Unificado$GCI)
+qplot(Criterios_Unificado$ECI, geom = "histogram", main = "ECI distribution", xlb = "ECI", col=I("blue"))
+summary(Criterios_Unificado$ECI)
+qplot(Criterios_Unificado$EDBI, geom = "histogram", main = "EDBI distribution", xlb = "EDBI", col=I("blue"))
+summary(Criterios_Unificado$EDBI)
+qplot(Criterios_Unificado$GDP, geom = "histogram", main = "GDP distribution", xlb = "GDP", col=I("blue"))
+summary(Criterios_Unificado$GDP)
+```
+```{r}
+#tomado de DataCamp
+library(stats)
+pca_res <- prcomp(Criterios_Unificado, scale=TRUE)
+summary(pca_res) #1
+names(pca_res)
+head(pca_res$x)
+head(pca_res$center)
+str(pca_res$x)
+```
+```{r}
+respca<- princomp(Criterios_Unificado, cor = TRUE)
+summary(respca) #1
+
+```
+```{r}
+#Pruebas graficas
+install.packages("devtools")
+library(devtools)
+install_github("vqv/ggbiplot")
+library(ggbiplot)
+ggbiplot(pca_res, labels = rownames(Criterios_Unificado), repel = TRUE)
+```
+```{r}
+grupo<- as.factor() #generar un objeto que represente la agrupación de los paises con las mismas caracteristicas
+ggbiplot(pca_res, labels = rownames(Criterios_Unificado), repel = TRUE)
+
+
+```
+
+
+```{r}
+regress1<- lm(GCI~ GDP+EDBI+ECI, data = Criterios_Unificado)
+summary(regress1)
+
+cor(GCI, 
+cor.test(Criterios_Unificado$GCI, Criterios_Unificado$GDP)
+```
+
+
+
+
+
+```{r}
+library(tidyverse)
+library(cluster)
+install.packages("factoextra")
+library(factoextra)
+install.packages("NbClust")
+library(NbClust)
+library(tidyr)
+```
+```{r}
+CU_Norm<- scale(Criterios_Unificado)
+head(Criterios_Unificado)
+#calcular la matriz de distacias
+m.distancia <- get_dist(CU_Norm, method = "euclidean") #el método aceptado también puede ser: "maximum", "manhattan", "canberra", "binary", "minkowski", "pearson", "spearman" o "kendall"
+fviz_dist(m.distancia, gradient = list(low = "blue", mid = "white", high = "red"))
+```
+```{r}
+fviz_nbclust(CU_Norm, kmeans, method = "wss")
+clusters<- kmeans(CU_Norm, 5)
+CU_Norm$Borough <- as.factor(clusters$cluster)
+str(clusters)
+```
+```{r}
+
+```
+
+
+
+
+
