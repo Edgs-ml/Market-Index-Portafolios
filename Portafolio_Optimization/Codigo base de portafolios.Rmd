@@ -1,0 +1,79 @@
+---
+title: "Portafolio Paper"
+author: "Juan Luis Gonzalez A01651676"
+date: "25/10/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(quantmod)
+library(PerformanceAnalytics)
+library(PortfolioAnalytics)
+library(readxl)
+library(tidyverse)
+library(textshape)
+library(DEoptim)
+```
+
+```{r}
+df<- read_excel("C:/Users/juanl/Desktop/paper/Bases de datos/Series de grupos/Charting Excel Export - Nov 3rd 2021 9_48_57 pm.xls")
+view()
+#df<-textshape::column_to_rownames(df,loc=1)
+#Cambiar nombres de portafolios
+View(df)
+colnames(df)<-c("Fecha","FTSE","NIKEI","SENSEX","DAX","DJ","CAC","HSI")
+```
+
+```{r}
+FTSE<-xts(df$FTSE,as.Date(df$Fecha))
+NIKEI<-xts(df$NIKEI,as.Date(df$Fecha))
+SENSEX<-xts(df$SENSEX,as.Date(df$Fecha))
+DAX<-xts(df$DAX,as.Date(df$Fecha))
+DJ<-xts(df$DJ,as.Date(df$Fecha))
+CAC<-xts(df$CAC,as.Date(df$Fecha))
+HSI<-xts(df$HSI,as.Date(df$Fecha))
+
+portafolio<-merge.xts(FTSE,NIKEI,SENSEX,DAX,DJ,CAC,HSI)
+```
+
+```{r}
+
+Returns <- Return.calculate(portafolio)[-1,]
+```
+
+```{r}
+Specs_Port1 <- portfolio.spec(c("FTSE","NIKEI","SENSEX","DAX","DJ","CAC","HSI"))#Incializar el objeto portafolio
+Specs_Port1 <- add.constraint(Specs_Port1,type="full_investment")#No apalancamiento, los pesos suma 100
+Specs_Port1 <- add.constraint(Specs_Port1,type="long_only")#Solo posiciones largas, no cortos
+View(Specs_Port1)
+```
+
+```{r}
+Specs_Port1 <- add.objective(Specs_Port1,type="risk",name="StdDev")#Dos tipos de obejtivos, risk minimiza, con la funcion desviacion estandar
+Specs_Port1 <- add.objective(Specs_Port1,type='return',name='mean')
+#En este se amximiza el retorno
+#Solo construye no hace
+Specs_Port1#Especifiaciones dle portafolio recetario
+```
+
+```{r}
+#indice<-as.Date(rownames(Returns))
+#rturnsmatrix<-xts(as.matrix(Returns),
+                  #indice)
+
+length(Returns)
+Optimized_Port1 <- optimize.portfolio(Returns,Specs_Port1)
+Optimized_Port1
+
+chart.Weights(Optimized_Port1)
+W <- extractWeights(Optimized_Port1)
+W
+sum(W)
+```
+

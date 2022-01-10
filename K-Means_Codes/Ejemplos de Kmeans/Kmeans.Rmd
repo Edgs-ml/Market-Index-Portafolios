@@ -1,0 +1,46 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+#Librerias
+```{r setup, include=FALSE}
+library(readxl)#Leer excel
+library(factoextra)#funcion kmeans
+library(textshape)#editar las columnas
+library(tidyverse)#Permite hacer el modelo para la grafica de Elbow Method
+library(cluster)
+```
+#Carga de base de datos
+```{r}
+df1 <- data.frame(read_excel("C:/Users/juanl/Desktop/paper/Criterios - Unificado.xlsx"))#Carga los datos
+df1<-textshape::column_to_rownames(df1,loc=1)
+df1$GDP <- NULL
+```
+
+#Dimencionado de datos y seed para kmeans
+```{r}
+scaledD <- scale(df1)
+set.seed(123)
+```
+
+#Elbow Method
+```{r}
+fviz_nbclust(df1, kmeans, method = "wss")
+```
+
+#Gap Method
+```{r}
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(scaledD,FUN = kmeans,nstart = 25,K.max = 30,B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+```
+
+#Agrupacion por clusters
+```{r}
+km<- kmeans(df1, centers = 4, iter.max = 20, nstart = 20)
+fviz_cluster(km, data = df1)#Grafica K means
+```
+
