@@ -14,8 +14,6 @@ library(ghyp)#multivariado NIG
 library(cramer)#Pruba cramer NIG multivariada
 ```
 
-#Las series no son normles ni estacionarias
-
 ```{r Datos, y forma de df}
 g1<- read_excel("C:/Users/juanl/Desktop/paper/Bases de datos/Series de grupos/g1.xls")
 
