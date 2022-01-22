@@ -1,39 +1,50 @@
-{r Librerias, include=FALSE}
+---
+title: "Agrupacion por pca"
+author: "Ppaper"
+date: "9/30/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r Librerias, include=FALSE}
 library(readxl)#Leer excel
 library(factoextra)#funcion kmeans, grafiacs de pca
 library(textshape)#editar las columnas}
 library(naniar)#elimina nas
 library(stats)#pca
+library(tidyverse)
+```
 
-
-{r Base de datos}
+```{r Base de datos}
 df1 <- data.frame(read_excel("C:/Users/juanl/Desktop/paper/Bases de datos/Criterios-Unificado.xlsx"))#Carga los datos
 df1<-textshape::column_to_rownames(df1,
                                    loc=1)
 df1<-(na.omit(df1))
 df1$GDP<-NULL
+```
 
-
-{r Generar analisis PCA}
+```{r Generar analisis PCA}
 #df1pca <- df1 [,-4]
 pca_2<-prcomp(df1)
 
 summary(pca_2)
+```
 
-
-{r Combinar en una base el PCA1}
+```{r Combinar en una base el PCA1}
 df2 <- cbind(df1, 
              pca_2$x)#Agrefar pca2 por renglones
-
-
-{r Orden desendente de PCA1}
+```
+ 
+```{r Orden desendente de PCA1}
 df2$pais<-rownames(df2)
 
 Clas<-df2 %>%
-  arrange(desc(PC1))
+    arrange(desc(PC1))
+View(Clas)
+```
 
-
-{r Importancia del componente principal}
+```{r Importancia del componente principal}
 #porcentaje de la varianza que se explica con el PCA1
 summary(pca_2)
 
@@ -60,10 +71,13 @@ correlaciones<-data.frame(cor(comprobacion))
 View(correlaciones[1:5,1:3])#ver de del renglon 1 a 5 y de la columna 1 a 3
 
 
+```
 
-
-{r Grupo 1}
+```{r Grupo 1}
 Class<-data.frame(Clas$pais,Clas$PC1)
 colnames(Class)<-c("País","PC1")
 Grupo1<-head(Class,5)
 View(Grupo1)
+```
+
+
