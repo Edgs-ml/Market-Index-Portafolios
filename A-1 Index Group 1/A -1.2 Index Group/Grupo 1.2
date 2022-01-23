@@ -1,0 +1,165 @@
+---
+title: "G1.2"
+author: "Juan Luis Gonzalez A01651676"
+date: "22/1/2022"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r Librerias}
+library(readxl)
+library(fBasics)#Analisis estadistico
+library(aTSA)#Raiz Unitaria
+library(tseries)#Raiz Unitaria
+library(naniar)#remueve Nas
+library(tidyverse)#Ya incluye read excel
+library(PerformanceAnalytics)
+library(textshape)
+library(QuantPsyc)#Pruba multivariada de normlaidad
+library(statmod)
+library(ghyp)#multivariado NIG
+library(cramer)#Pruba cramer NIG multivariada
+```
+
+```{r Datos, y forma de df}
+g1<- read_excel("C:/Users/juanl/Desktop/paper/Correlaciones G1/Charting Excel Export - Jan 21st 2022 11_27_13 pm.xls")
+
+colnames(g1)<-c("Fecha","SPX","OMXC","FTSE","KOSPI","MSCI")
+
+#View(g1)
+g1<-textshape::column_to_rownames(g1,loc=1)
+
+```
+
+```{r Limpieza de base}
+g1<-drop_na(g1)
+glimpse(g1)
+#vis_miss(retornos)
+#View(retornos)
+```
+
+```{r Retornos}
+retornos<-Return.calculate(g1,method = "log")[-1,]
+#retornos<-drop_na(retornos)
+View(retornos)
+```
+
+```{r Estadistica de los retornos}
+Estg1<-basicStats(retornos)
+Estg1
+```
+
+
+```{r Prueba de raiz unitaria}
+adf.test(retornos$SPX)
+adf.test(retornos$OMXC)
+adf.test(retornos$FTSE)
+adf.test(retornos$KOSPI)
+adf.test(retornos$MSCI)
+
+#Todas las series son estacionarias
+```
+
+```{r Pruebas de normalidad univariadas}
+#Shapiro Wilk
+  shapiro.test(retornos$SPX)
+  shapiro.test(retornos$OMXC)
+  shapiro.test(retornos$FTSE)
+  shapiro.test(retornos$KOSPI)
+  shapiro.test(retornos$MSCI)
+
+#Shapiro Francia
+  sfTest(retornos$SPX)
+  sfTest(retornos$OMXC)
+  sfTest(retornos$FTSE)
+  sfTest(retornos$KOSPI)
+  sfTest(retornos$MSCI)
+
+#Construccion de normal con parametros multivariados de la series
+  m<-mean(retornos$SPX)
+  sd<-sd(retornos$SPX)
+  len<-length(retornos$SPX)
+  basenormal<-rnorm(len,m,sd)#normal con los parametros de nuestras series
+
+#Prubas de Kormogorov contra distribucion normal, creada con paramaetros de nuestra serie 
+  ks.test(retornos$SPX,basenormal)
+  ks.test(retornos$OMXC,basenormal)
+  ks.test(retornos$FTSE,basenormal)
+  ks.test(retornos$KOSPI,basenormal)
+  ks.test(retornos$MSCI,basenormal)
+#Ninguna de las series es normal
+```
+
+```{r Pruba de normalidad multivariada}
+  mult.norm(retornos)$mult.test
+#De forma multivariada no hay normalidad
+```
+
+```{r Series contra normal}
+
+plot(density(retornos$SPX),col="blue",ylim=c(0,60), main="Distribuciones contra normal")+
+    lines(density(retornos$OMXC),
+        col="green")+
+    lines(density(retornos$FTSE),
+        col="orange")+
+    lines(density(retornos$KOSPI),
+        col="black")+
+    lines(density(retornos$MSCI),
+        col="grey")+
+  lines(density(basenormal),
+        col="red")
+```
+
+```{r Construccion de NIG univariada}
+#Parametros de la NIG
+  NIG<-nigFit(retornos$OMXC)
+
+#Agrupar parametros en un objeto
+   a<-NIG@fit[["par"]]
+   a<-data.frame(t(a))
+   
+#NIG aleatoria con parametors univariados de nuestra serie
+   r = rnig(len,
+            alpha = a$alpha , 
+            beta = a$beta, 
+            delta = a$delta ,
+            mu= a$mu)
+   plot(density(r),
+        col="red",
+        main="NIG Univariada",
+        sub="STI index")
+   
+#Pruba de Kormogorov univariada para NIG
+ ks.test(retornos$OMXC,r)
+```
+
+```{r Construccion  NIG multivariada}
+#Parametros para NIG Multivariada
+  multNIG<-fit.NIGmv(data=retornos,silent=FALSE)
+
+#Localizar parametros dentor de un obejto
+  Mom1NIGm<-multNIG@expected.value
+  Mom2NIGm<-multNIG@variance
+
+#Construccion de la funcion NIG con nuestros  parametros de la funcion multivariada
+  Mnig <- rghyp(len,multNIG)
+  retornos1<-as.matrix(retornos)
+
+#Prueba cramer de comprobacion
+  #Se buscan similitudes estadisticas
+  cramer.test(Mnig,retornos1,conf.level = .95)
+
+ #Graficas de NIG Multivariada
+  plot(density(Mnig),
+       col="red",ylim=c(0,60),main="Distribuciones contra NIG multivariada")+
+    lines(density(retornos$SPX),
+          col="green")+
+    lines(density(retornos$FTSE),
+          col="purple")+
+    lines(density(retornos$KOSPI),
+          col="black")+
+    lines(density(retornos$MSCI),
+          col="dark blue")+
+    lines(density(retornos$OMXC),
+          col="pink")
+```
