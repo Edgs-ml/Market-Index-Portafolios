@@ -1,11 +1,16 @@
 ---
-title: "G1.2"
+title: "Untitled"
 author: "Juan Luis Gonzalez A01651676"
-date: "22/1/2022"
+date: "23/1/2022"
 output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 ```{r Librerias}
 library(readxl)
 library(fBasics)#Analisis estadistico
@@ -41,7 +46,7 @@ glimpse(g1)
 ```{r Retornos}
 retornos<-Return.calculate(g1,method = "log")[-1,]
 #retornos<-drop_na(retornos)
-View(retornos)
+#View(retornos)
 ```
 
 ```{r Estadistica de los retornos}
