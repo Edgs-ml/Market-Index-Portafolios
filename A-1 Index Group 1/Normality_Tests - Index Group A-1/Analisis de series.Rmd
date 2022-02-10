@@ -12,34 +12,42 @@ library(QuantPsyc)#Pruba multivariada de normlaidad
 library(statmod)
 library(ghyp)#multivariado NIG
 library(cramer)#Pruba cramer NIG multivariada
+library(tidyr)
+library(dplyr)
 ```
 
 ```{r Datos, y forma de df}
-g1<- read_excel("C:/Users/juanl/Desktop/paper/Bases de datos/Series de grupos/g1.xls")
+g1<- read_excel("Documents/GitHub/Market-Index-Portafolios/A-1 Index Group 1/A -1.2 Index Group/Correlaciones A - 1.2/Charting Excel Export - Jan 21st 2022 11_27_13 pm.xls", 
+     col_types = c("date", "numeric", "numeric", 
+         "numeric", "numeric", "numeric"))
+
+g1<- Charting_Excel_Export_Jan_21st_2022_11_27_13_pm
 
 colnames(g1)<-c("Fecha","OMX 20","STI","FTSE 100","HSI","DJI")
 
 g1<-textshape::column_to_rownames(g1,loc=1)
-
 ```
 
 ```{r Limpieza de base}
 g1<-drop_na(g1)
 glimpse(g1)
 #View(g1)
-
 ```
 
 ```{r Retornos}
 retornos<-Return.calculate(g1,method = "log")
-retornos<-drop_na(retornos)
+retornos<- retornos[-1,]
+#retornos<-drop_na(retornos)
+
+ggplot(retornos, aes(retornos$OMX.20))+
+  geom_density()+
+  geom_vline(xintercept = 0)
 ```
 
 ```{r Estadistica de los retornos}
 Estg1<-basicStats(retornos)
 Estg1
 ```
-
 
 ```{r Prueba de raiz unitaria}
 adf.test(retornos$STI)
@@ -84,6 +92,8 @@ adf.test(retornos$DJI)
 ```{r Pruba de normalidad multivariada}
   mult.norm(retornos)$mult.test
 #De forma multivariada no hay normalidad
+# NO USAR !!! A MENOS DE QUE TENGAS UNA BUENA COMPU !!!!
+# CUIDADO !!!
 ```
 
 ```{r Series contra normal}
