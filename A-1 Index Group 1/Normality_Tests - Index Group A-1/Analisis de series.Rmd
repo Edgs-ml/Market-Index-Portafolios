@@ -26,7 +26,6 @@ g1<- Charting_Excel_Export_Jan_21st_2022_11_27_13_pm
 colnames(g1)<-c("Fecha","OMX 20","STI","FTSE 100","HSI","DJI")
 
 g1<-textshape::column_to_rownames(g1,loc=1)
-
 ```
 
 ```{r Limpieza de base}
