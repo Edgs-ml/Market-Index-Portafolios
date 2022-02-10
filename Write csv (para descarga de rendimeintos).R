@@ -22,7 +22,7 @@ library(PortfolioAnalytics)
   
   View(Retornos)
   
-  write.csv(Retornos,"C:\\Users\\juanl\\Desktop\\paper\\Bases de datos\\Series de grupos\\Retornos.csv")
+  write.csv(Retornos,"DIRECCION DEL ARCHIVO EN TU PC O GITHUB\\NOMBREX.csv")
   
   
   
