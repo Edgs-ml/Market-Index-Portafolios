@@ -137,3 +137,6 @@ plot(density(Mnig),
         col="dark blue")+
   lines(density(g1$OMXC),
         col="pink")
+
+# De aqui obtenemos los momentos estadisticos de las series para poder hacer la 
+# optimización de portafolio ALPHA 1.2. en el excel de la carpeta 1.2.4. Optimización
