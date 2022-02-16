@@ -1,16 +1,20 @@
 
 library(readxl)
-library(fBasics)#Analisis estadistico
-library(aTSA)#Raiz Unitaria
-library(tseries)#Raiz Unitaria
-library(naniar)#remueve Nas
-library(tidyverse)#Ya incluye read excel
+library(fBasics) # Analisis estadistico
+library(aTSA)# Raiz Unitaria
+library(zoo) # Requerido para cargar la libreria de tseries
+library(tseries) # Raiz Unitaria
+library(naniar) # remueve Nas
+library(tidyverse) # Ya incluye read excel
 library(PerformanceAnalytics)
 library(textshape)
-library(QuantPsyc)#Pruba multivariada de normlaidad
+library(boot) # Requuerida para cargar la libreria QuantPsyc
+library(MASS) # Requuerida para cargar la libreria QuantPsyc
+library(QuantPsyc) # Pruba multivariada de normlaidad
 library(statmod)
-library(ghyp)#multivariado NIG
-library(cramer)#Pruba cramer NIG multivariada
+library(numDeriv) # Requuerida para cargar la libreria ghyp
+library(ghyp) # multivariado NIG
+library(cramer) # Pruba cramer NIG multivariada
 
 g1<- read_excel(insertar direccion GITHUB)
 
