@@ -1,4 +1,4 @@
-
+#Librerias----------------------------------------------------------------------
 library(readxl)
 library(fBasics) # Analisis estadistico
 library(aTSA)# Raiz Unitaria
@@ -17,6 +17,7 @@ library(ghyp) # multivariado NIG
 library(cramer) # Pruba cramer NIG multivariada
 library(textshape)
 
+#Ordenar la base----------------------------------------------------------------
 g1<- read.csv("1.2.3.g1 5 menos correlacionados.csv")
 View(g1)
 colnames(g1)<-c("Fecha","SPX","OMXC","FTSE","KOSPI","MSCI")
@@ -33,6 +34,7 @@ glimpse(g1)
 #g1<-drop_na(g1)
 #View(g1)
 
+#Pruebas de estacionaridad------------------------------------------------------
 Estg1<-basicStats(g1)
 Estg1
 
@@ -44,6 +46,7 @@ adf.test(g1$MSCI)
 
 #Todas las series son estacionarias
 
+#Pruebas de normalidad----------------------------------------------------------
 #Shapiro Wilk
 shapiro.test(g1$SPX)
 shapiro.test(g1$OMXC)
@@ -64,7 +67,9 @@ sd<-sd(g1$SPX)
 len<-length(g1$SPX)
 basenormal<-rnorm(len,m,sd)#normal con los parametros de nuestras series
 
-#Prubas de Kormogorov contra distribucion normal, creada con paramaetros de nuestra serie 
+#Kormogorov---------------------------------------------------------------------
+#Prubas de Kormogorov contra distribucion normal, 
+#creada con paramaetros de nuestra serie 
 ks.test(g1$SPX,basenormal)
 ks.test(g1$OMXC,basenormal)
 ks.test(g1$FTSE,basenormal)
@@ -72,10 +77,11 @@ ks.test(g1$KOSPI,basenormal)
 ks.test(g1$MSCI,basenormal)
 #Ninguna de las series es normal
 
+#Prueba multivariada de normlaidad----------------------------------------------
 mult.norm(g1)$mult.test
 #De forma multivariada no hay normalidad
 
-
+#Graficas de normalidad---------------------------------------------------------
 plot(density(g1$SPX),col="blue",ylim=c(0,60), main="Distribuciones contra normal")+
   lines(density(g1$OMXC),
         col="green")+
@@ -88,7 +94,7 @@ plot(density(g1$SPX),col="blue",ylim=c(0,60), main="Distribuciones contra normal
   lines(density(basenormal),
         col="red")
 
-#Parametros de la NIG
+#Parametros de la NIG univariada------------------------------------------------
 NIG<-nigFit(g1$OMXC)
 
 #Agrupar parametros en un objeto
@@ -109,6 +115,7 @@ plot(density(r),
 #Pruba de Kormogorov univariada para NIG
 ks.test(g1$OMXC,r)
 
+#Nig Multivariada---------------------------------------------------------------
 #Parametros para NIG Multivariada
 multNIG<-fit.NIGmv(data=g1,silent=FALSE)
 
@@ -120,11 +127,11 @@ Mom2NIGm<-multNIG@variance
 Mnig <- rghyp(len,multNIG)
 g11<-as.matrix(g1)
 
-#Prueba cramer de comprobacion
+#Prueba cramer de comprobacion--------------------------------------------------
 #Se buscan similitudes estadisticas
 cramer.test(Mnig,g11,conf.level = .95)
 
-#Graficas de NIG Multivariada
+#Graficas de NIG Multivariada---------------------------------------------------
 plot(density(Mnig),
      col="red",ylim=c(0,60),main="Distribuciones contra NIG multivariada")+
   lines(density(g1$SPX),
