@@ -1,11 +1,14 @@
 #Librerias----------------------------------------------------------------------
 library(readxl)
+library(timeDate) # Requerido para cargar la libreria de fBasics
+library(timeSeries) # Requerido para cargar la libreria de fBasics
 library(fBasics) # Analisis estadistico
 library(aTSA)# Raiz Unitaria
 library(zoo) # Requerido para cargar la libreria de tseries
 library(tseries) # Raiz Unitaria
 library(naniar) # remueve Nas
 library(tidyverse) # Ya incluye read excel
+library(xts)
 library(PerformanceAnalytics)
 library(textshape)
 library(boot) # Requuerida para cargar la libreria QuantPsyc
@@ -26,8 +29,9 @@ View(g1)
 g1<-column_to_rownames(g1,loc=1)
 
 g1<-drop_na(g1)
+g1 <- as.xts(g1)
 glimpse(g1)
-#vis_miss(g1)
+#vis_miss(g1) hacerlo antes de pasarlo a xxts
 #View(g1)
 
 #g1<-Return.calculate(g1,method = "log")[-1,]
