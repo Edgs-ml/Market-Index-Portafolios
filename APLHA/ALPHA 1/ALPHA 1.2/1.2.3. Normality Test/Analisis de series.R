@@ -193,7 +193,7 @@ multNIG<-fit.NIGmv(data=g1,silent=FALSE)
 #Localizar parametros dentor de un obejto
 Mom1NIGm<-multNIG@expected.value
 Mom2NIGm<-multNIG@variance
-
+multNI
 #Construccion de la funcion NIG con nuestros  parametros de la funcion multivariada
 Mnig <- rghyp(len,multNIG)
 g11<-as.matrix(g1)
