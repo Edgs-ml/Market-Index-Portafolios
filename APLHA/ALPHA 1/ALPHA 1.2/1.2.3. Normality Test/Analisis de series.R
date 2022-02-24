@@ -69,65 +69,122 @@ sfTest(g1$MSCI)
 #Construccion de normal con parametros multivariados de la series
 
 
-#Kormogorov---------------------------------------------------------------------
+#Kormogorov--------------------------------------------Construir normal teorica
 #Prubas de Kormogorov contra distribucion normal, 
 #creada con paramaetros de nuestra serie 
-ks.test(g1$SPX,basenormal)
-ks.test(g1$OMXC,basenormal)
-ks.test(g1$FTSE,basenormal)
-ks.test(g1$KOSPI,basenormal)
-ks.test(g1$MSCI,basenormal)
-#Ninguna de las series es normal
+ks.test(g1$SPX,basenormal)#*
+ks.test(g1$OMXC,basenormal)#*
+ks.test(g1$FTSE,basenormal)#*
+ks.test(g1$KOSPI,basenormal)#*
+ks.test(g1$MSCI,basenormal)#*
+#Ninguna de las series es normal#*
 
 #Prueba multivariada de normlaidad----------------------------------------------
 mult.norm(g1)$mult.test
 #De forma multivariada no hay normalidad
 
-#Graficas de normalidad---------------------------------------------------------
-muN <- mean(g1$OMXC)
-sdN <- sd(g1$OMXC)
-grid <- seq(-.20, .20, by = .001) #de que tamño son los pasos, usar seq. by= tiene que ser muy poco
-dn <- dnorm(grid, muN, sdN)
-plot(x = grid, y = r,
-     type = "l")
-lines(x=grid, y=dn, col="red")
+
+
+#-------------------------
+#Teorica Normal ajustada con las series de tiempo de los activos del portafolio
+muN_OMXC <- mean(g1$OMXC)
+sdN_OMXC <- sd(g1$OMXC)
+gridN_OMXC <- seq(-.20, .20, by = .001)
+dN_OMXC <- dnorm(gridN_OMXC, muN_OMXC, sdN_OMXC)
+
+muN_SPX <- mean(g1$SPX)
+sdN_SPX <- sd(g1$SPX)
+gridN_SPX <- seq(-.20, .20, by = .001)
+dN_SPX <- dnorm(gridN_SPX, muN_SPX, sdN_SPX)
+
+muN_FTSE <- mean(g1$FTSE)
+sdN_FTSE <- sd(g1$FTSE)
+gridN_FTSE <- seq(-.20, .20, by = .001)
+dN_FTSE <- dnorm(gridN_FTSE, muN_FTSE, sdN_FTSE)
+
+muN_KOSPI <- mean(g1$KOSPI)
+sdN_KOSPI <- sd(g1$KOSPI)
+gridN_KOSPI <- seq(-.20, .20, by = .001)
+dN_KOSPI <- dnorm(gridN_KOSPI, muN_KOSPI, sdN_KOSPI)
+
+muN_MSCI <- mean(g1$MSCI)
+sdN_MSCI <- sd(g1$MSCI)
+gridN_MSCI <- seq(-.20, .20, by = .001)
+dN_MSCI <- dnorm(gridN_MSCI, muN_MSCI, sdN_MSCI)
+
+#Teorica NIG ajustada--------------
+NIG_OMXC <- nigFit(g1$OMXC)
+NIG_SPX <- nigFit(g1$SPX)
+NIG_FTSE <- nigFit(g1$FTSE)
+NIG_KOSPI <- nigFit(g1$KOSPI)
+NIG_MSCI <- nigFit(g1$MSCI)
+#agrupar parametros en un objeto
+ParametroNIG_OMXC <- NIG_OMXC@fit[["par"]]
+ParametroNIG_OMXC <- data.frame(t(ParametroNIG_OMXC))
+r_OMXC=dnig(gridN_OMXC,
+            alpha = ParametroNIG_OMXC$alpha, 
+            beta = ParametroNIG_OMXC$beta, 
+            delta = ParametroNIG_OMXC$delta,
+            mu = ParametroNIG_OMXC$mu)
+
+ParametroNIG_SPX <- NIG_SPX@fit[["par"]]
+ParametroNIG_SPX <- data.frame(t(ParametroNIG_SPX))
+r_SPX=dnig(gridN_SPX,
+           alpha = ParametroNIG_SPX$alpha,
+           beta = ParametroNIG_SPX$beta,
+           delta = ParametroNIG_SPX$delta,
+           mu = ParametroNIG_SPX$mu)
+
+ParametroNIG_FTSE <- NIG_FTSE@fit[["par"]]
+ParametroNIG_FTSE <- data.frame(t(ParametroNIG_FTSE))
+r_FTSE=dnig(gridN_FTSE,
+            alpha = ParametroNIG_FTSE$alpha,
+            beta = ParametroNIG_FTSE$beta,
+            delta = ParametroNIG_FTSE$delta,
+            mu = ParametroNIG_FTSE$mu)
+
+ParametroNIG_KOSPI <- NIG_KOSPI@fit[["par"]]
+ParametroNIG_KOSPI <- data.frame(t(ParametroNIG_KOSPI))
+r_KOSPI=dnig(gridN_KOSPI,
+             alpha = ParametroNIG_KOSPI$alpha,
+             beta = ParametroNIG_KOSPI$beta,
+             delta = ParametroNIG_KOSPI$delta,
+             mu = ParametroNIG_KOSPI$mu)
+
+ParametroNIG_MSCI <- NIG_MSCI@fit[["par"]]
+ParametroNIG_MSCI <- data.frame(t(ParametroNIG_MSCI))
+r_MSCI=dnig(gridN_MSCI,
+            alpha = ParametroNIG_MSCI$alpha,
+            beta = ParametroNIG_MSCI$beta,
+            delta = ParametroNIG_MSCI$delta,
+            mu = ParametroNIG_MSCI$mu)
+
+#Graficas de normalidad y NIG Y Empiricas---------------------------------------------------------
+#Queremos comparar una normal teorica ajustada con los datos de las series 
+plot(x = gridN_OMXC, y = r_OMXC,
+     type = "l", label = "Gráfica 1 OMXC")
+lines(x=gridN_OMXC, y=dN_OMXC, col="red")
 lines(density(g1$OMXC), col = "green")
 
+plot(x = gridN_SPX, y = r_SPX,
+     type = "l")
+lines(x=gridN_SPX, y=dN_SPX, col="red")
+lines(density(g1$SPX), col="green")
 
+plot(x = gridN_FTSE, y = r_FTSE,
+     type = "l")
+lines(x=gridN_FTSE, y=dN_FTSE, col="red")
+lines(density(g1$FTSE), col = "green") #Grafica normal, nig y empirica de FTSE
 
-plot(density(g1$SPX),col="blue",ylim=c(0,60), main="Distribuciones contra normal")+
-  lines(density(g1$OMXC),
-        col="green")+
-  lines(density(g1$FTSE),
-        col="orange")+
-  lines(density(g1$KOSPI),
-        col="black")+
-  lines(density(g1$MSCI),
-        col="grey")+
-  lines(density(basenormal),
-        col="red")
+plot(x = gridN_KOSPI, y = r_KOSPI,
+     type = "l")
+lines(x=gridN_KOSPI, y=dN_KOSPI, col="red")
+lines(density(g1$KOSPI), col = "green") #Grafica normal, nig y empirica de KOSPI
 
-#Parametros de la NIG univariada------------------------------------------------
-NIG<-nigFit(g1$OMXC)
-
-
-#Agrupar parametros en un objeto
-a<-NIG@fit[["par"]]
-a<-data.frame(t(a))
-
-#NIG aleatoria con parametors univariados de nuestra serie
-r = dnig(grid,
-         alpha = a$alpha , 
-         beta = a$beta, 
-         delta = a$delta ,
-         mu= a$mu)
-plot(density(r),
-     col="red",
-     main="NIG Univariada",
-     sub="STI index")
-
-#Pruba de Kormogorov univariada para NIG
-ks.test(g1$OMXC,r)
+plot(x = gridN_MSCI, y = r_MSCI,
+     type = "l")
+lines(x=gridN_MSCI, y=dN_MSCI, col="red")
+lines(density(g1$MSCI), col = "green") #Grafica normal, nig y empirica de MCSI
 
 #Nig Multivariada---------------------------------------------------------------
 #Parametros para NIG Multivariada
