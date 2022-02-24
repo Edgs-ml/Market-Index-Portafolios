@@ -65,11 +65,9 @@ sfTest(g1$FTSE)
 sfTest(g1$KOSPI)
 sfTest(g1$MSCI)
 
+#Lo que qeuremos es comparar gráficamente si los datos se parecen a una DN teorica
 #Construccion de normal con parametros multivariados de la series
-m<-mean(g1$SPX)
-sd<-sd(g1$SPX)
-len<-length(g1$SPX)
-basenormal<-rnorm(len,m,sd)#normal con los parametros de nuestras series
+
 
 #Kormogorov---------------------------------------------------------------------
 #Prubas de Kormogorov contra distribucion normal, 
@@ -86,6 +84,17 @@ mult.norm(g1)$mult.test
 #De forma multivariada no hay normalidad
 
 #Graficas de normalidad---------------------------------------------------------
+muN <- mean(g1$OMXC)
+sdN <- sd(g1$OMXC)
+grid <- seq(-.20, .20, by = .001) #de que tamño son los pasos, usar seq. by= tiene que ser muy poco
+dn <- dnorm(grid, muN, sdN)
+plot(x = grid, y = r,
+     type = "l")
+lines(x=grid, y=dn, col="red")
+lines(density(g1$OMXC), col = "green")
+
+
+
 plot(density(g1$SPX),col="blue",ylim=c(0,60), main="Distribuciones contra normal")+
   lines(density(g1$OMXC),
         col="green")+
@@ -101,12 +110,13 @@ plot(density(g1$SPX),col="blue",ylim=c(0,60), main="Distribuciones contra normal
 #Parametros de la NIG univariada------------------------------------------------
 NIG<-nigFit(g1$OMXC)
 
+
 #Agrupar parametros en un objeto
 a<-NIG@fit[["par"]]
 a<-data.frame(t(a))
 
 #NIG aleatoria con parametors univariados de nuestra serie
-r = rnig(len,
+r = dnig(grid,
          alpha = a$alpha , 
          beta = a$beta, 
          delta = a$delta ,
