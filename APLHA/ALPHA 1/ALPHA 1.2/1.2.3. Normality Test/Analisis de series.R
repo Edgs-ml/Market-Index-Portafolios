@@ -52,8 +52,8 @@ adf.test(g1$MSCI)
 
 #Pruebas de normalidad----------------------------------------------------------
 #Shapiro Wilk
-shapiro.test(g1$SPX)
-shapiro.test(g1$OMXC)
+shapiro.test(g1$SPX) #Error in shapiro.test(g1$SPX) : sample size must be between 3 and 5000
+shapiro.test(g1$OMXC) #Encontrar como subseleccionar muestras para hacer la shapiro.test
 shapiro.test(g1$FTSE)
 shapiro.test(g1$KOSPI)
 shapiro.test(g1$MSCI)
@@ -64,10 +64,6 @@ sfTest(g1$OMXC)
 sfTest(g1$FTSE)
 sfTest(g1$KOSPI)
 sfTest(g1$MSCI)
-
-#Lo que qeuremos es comparar gráficamente si los datos se parecen a una DN teorica
-#Construccion de normal con parametros multivariados de la series
-
 
 #Kormogorov--------------------------------------------Construir normal teorica
 #Prubas de Kormogorov contra distribucion normal, 
@@ -84,7 +80,8 @@ mult.norm(g1)$mult.test
 #De forma multivariada no hay normalidad
 
 
-
+#Lo que qeuremos es comparar gráficamente si los datos se parecen a una Distribución Normal teorica
+#Construccion de normal con parametros multivariados de la series
 #-------------------------
 #Teorica Normal ajustada con las series de tiempo de los activos del portafolio
 muN_OMXC <- mean(g1$OMXC)
@@ -193,7 +190,7 @@ multNIG<-fit.NIGmv(data=g1,silent=FALSE)
 #Localizar parametros dentor de un obejto
 Mom1NIGm<-multNIG@expected.value
 Mom2NIGm<-multNIG@variance
-multNI
+
 #Construccion de la funcion NIG con nuestros  parametros de la funcion multivariada
 Mnig <- rghyp(len,multNIG)
 g11<-as.matrix(g1)
