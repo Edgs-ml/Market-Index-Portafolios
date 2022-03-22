@@ -9,10 +9,8 @@ editor_options:
 ```{r Librerias}
 library(readxl)
 library(fBasics)#Analisis estadistico
----
 library(timeDate)
 library(timeSeries)
----
 library(aTSA)#Raiz Unitaria
 library(tseries)#Raiz Unitaria
 library(naniar)#remueve Nas
@@ -26,17 +24,16 @@ library(cramer)#Pruba cramer NIG multivariada
 ```
 
 ```{r Datos, y forma de df}
-g1<- read_excel("C:/Users/juanl/Desktop/paper/Bases de datos/Series de grupos/retornos_de_R.xlsx", 
-    sheet = "Retornos NIG 2")
+g1<- read_xls("D:/JL/Market-Index-Portafolios/APLHA/ALPHA 1/ALPHA 1.1/1.1.2Normality_Tests/Serie de datos (el bueno).xls")
 
-colnames(g1)<-c("Fecha","OMX 20","STI","FTSE 100","HSI","SP")
+colnames(g1)<-c("Fecha","DJI","HSI","OMX20","STI","FTSE")
 
 g1<-textshape::column_to_rownames(g1,loc=1)
 
 ```
 
 ```{r Limpieza de base}
-retornos<-drop_na(g1)
+g1<-drop_na(g1)
 glimpse(g1)
 #vis_miss(retornos)
 #View(retornos)
@@ -44,8 +41,9 @@ glimpse(g1)
 ```
 
 ```{r Retornos}
-#retornos<-Return.calculate(g1,method = "log")
-#retornos<-drop_na(retornos)
+retornos<-Return.calculate(g1,method = "log")
+retornos<-drop_na(retornos)
+
 ```
 
 ```{r Estadistica de los retornos}
@@ -56,8 +54,8 @@ Estg1
 
 ```{r Prueba de raiz unitaria}
 adf.test(retornos$STI)
-adf.test(retornos$OMX.20)
-adf.test(retornos$FTSE.100)
+adf.test(retornos$OMX20)
+adf.test(retornos$FTSE)
 adf.test(retornos$HSI)
 adf.test(retornos$DJI)
 
@@ -66,29 +64,29 @@ adf.test(retornos$DJI)
 
 ```{r Pruebas de normalidad univariadas}
 #Shapiro Wilk
-  shapiro.test(retornos$OMX.20)
+  shapiro.test(retornos$OMX20)
   shapiro.test(retornos$STI)
-  shapiro.test(retornos$FTSE.100)
+  shapiro.test(retornos$FTSE)
   shapiro.test(retornos$HSI)
   shapiro.test(retornos$DJI)
 
 #Shapiro Francia
-  sfTest(retornos$OMX.20)
+  sfTest(retornos$OMX20)
   sfTest(retornos$STI)
-  sfTest(retornos$FTSE.100)
+  sfTest(retornos$FTSE)
   sfTest(retornos$HSI)
   sfTest(retornos$DJI)
 
 #Construccion de normal con parametros multivariados de la series
-  m<-mean(retornos$OMX.20)
-  sd<-sd(retornos$OMX.20)
-  len<-length(retornos$OMX.20)
+  m<-mean(retornos$OMX20)
+  sd<-sd(retornos$OMX20)
+  len<-length(retornos$OMX20)
   basenormal<-rnorm(len,m,sd)#normal con los parametros de nuestras series
 
 #Prubas de Kormogorov contra distribucion normal, creada con paramaetros de nuestra serie 
-  ks.test(retornos$OMX.20,basenormal)
+  ks.test(retornos$OMX20,basenormal)
   ks.test(retornos$STI,basenormal)
-  ks.test(retornos$FTSE.100,basenormal)
+  ks.test(retornos$FTSE,basenormal)
   ks.test(retornos$HSI,basenormal)
   ks.test(retornos$DJI,basenormal)
 #Ninguna de las series es normal
@@ -101,10 +99,10 @@ adf.test(retornos$DJI)
 
 ```{r Series contra normal}
 
-plot(density(retornos$OMX.20),col="blue",ylim=c(0,60), main="Distribuciones contra normal")+
+plot(density(retornos$OMX20),col="blue",ylim=c(0,60), main="Distribuciones contra normal")+
     lines(density(retornos$STI),
         col="green")+
-    lines(density(retornos$FTSE.100),
+    lines(density(retornos$FTSE),
         col="orange")+
     lines(density(retornos$HSI),
         col="black")+
@@ -156,9 +154,9 @@ plot(density(retornos$OMX.20),col="blue",ylim=c(0,60), main="Distribuciones cont
 #Graficas de NIG Multivariada
   plot(density(Mnig),
        col="red",ylim=c(0,60),main="Distribuciones contra NIG multivariada")+
-    lines(density(retornos$OMX.20),
+    lines(density(retornos$OMX20),
           col="green")+
-    lines(density(retornos$FTSE.100),
+    lines(density(retornos$FTSE),
           col="purple")+
     lines(density(retornos$HSI),
           col="black")+
