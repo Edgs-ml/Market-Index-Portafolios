@@ -50,7 +50,7 @@ Optimized_Port1 <- optimize.portfolio(Portafolio,
                                       optimize_method = "random",
                                       trace = TRUE)
 
-chart.Weights(Optimized_Port1)
+chart.Weights(Optimized_Port1,plot.type = "barplot")
 W_R <- extractWeights(Optimized_Port1)
 sum(W_R)
 
