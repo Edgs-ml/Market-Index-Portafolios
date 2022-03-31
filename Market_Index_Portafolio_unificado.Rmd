@@ -3,6 +3,9 @@ title: "Market Index Portafolio Code Copilation"
 author: "Edgar Sigfrido Soto Aparicio"
 date: "11/18/2021"
 output: html_document
+  html_document:
+    doc: TRUE
+    doc_depth: 3
 ---
 # PRIMERA PARTE. AGRUPACIÓN DE PAÍSES CON PCA Y K-MEANS
 
