@@ -8,9 +8,8 @@ output: html_document
     doc_depth: 3
 ---
 # PRIMERA PARTE. AGRUPACIÓN DE PAÍSES CON PCA Y K-MEANS
-
 ## 0. Cargar las librerias
-```{r}
+```{r, echo=FALSE}
 library(tidyverse) # Paquete que ayuda a manipular las bases de datos
 library(readxl) # Lector de archivos excel
 library(textshape) # 
@@ -40,10 +39,9 @@ describe(df)
 df1 <- df[,-4]
 # Data Frame without GDP and with USA and China
 ```
-
 ## 2. PCA
 ### 2.1. Matriz de correlaciones
-```{r}
+```{r, vaul}
 cor.plot(df)
 cor.plot(df1)
 cor.plot(df2)
