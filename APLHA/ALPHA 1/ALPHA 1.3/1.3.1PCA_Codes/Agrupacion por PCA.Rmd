@@ -17,12 +17,11 @@ library(tidyverse)
 ```
 
 ```{r Base de datos}
-df1 <- data.frame(read_excel("D:/JL/Market-Index-Portafolios/APLHA/ALPHA 1/ALPHA 1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx"))#Carga los datos
+df1 <- data.frame(read_excel("Criterios-Unificado (Datos para PCA).xlsx"))#Carga los datos
 df1<-textshape::column_to_rownames(df1,
                                    loc=1)
 df1<-(na.omit(df1))
 df1$GDP<-NULL
-View(df1)
 ```
 
 ```{r Generar analisis PCA}

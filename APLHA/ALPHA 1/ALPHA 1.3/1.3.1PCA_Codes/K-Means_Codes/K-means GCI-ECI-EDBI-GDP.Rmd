@@ -1,0 +1,85 @@
+---
+title: "K-means Criterios Unificados"
+author: "Edgar Sigfrido Soto Aparicio"
+date: "8/4/2021"
+output: html_document
+---
+1. Cargar las librerias
+```{r}
+library(tidyverse)
+library(readxl)
+library(broom)
+library(plotly)
+library(scales)
+library(caTools)
+library(caret)
+library(cluster)
+library(factoextra)
+library(textshape)
+```
+2. Cargar la base de datos
+```{r}
+Criterios_Unificado <- read_excel("~/Desktop/Market Index Portfolios/Bases de Datos/Criterios-Unificado.xlsx")
+df <- Criterios_Unificado
+df <- textshape::column_to_rownames(Criterios_Unificado, loc = 1)
+View(df)
+```
+
+```{r}
+df %>%
+  ggplot(aes(x=GCI, y=ECI))+
+  geom_point()+
+  geom_text(label=rownames(df))
+df %>%
+  ggplot(aes(x=GCI, y=EDBI))+
+  geom_point()+
+  geom_text(lable=rownames(df))
+df %>%
+  ggplot(aes(x=GCI, y=GDP))+
+  geom_point()+
+  geom_text(lable=rownames(df))
+df %>%
+  ggplot(aes(x=ECI, y=EDBI))+
+  geom_point()+
+  geom_text(lable=rownames(df))
+df %>%
+  ggplot(aes(x=ECI, y=GDPP))+
+  geom_point()+
+  geom_text(lable=rownames(df))
+```
+Dimencionado de datos y seed para kmeans
+```{r}
+df_scaled <- scale(df)
+set.seed(123)
+```
+
+Elbow Method
+```{r}
+fviz_nbclust(df, kmeans, method = "wss")
+```
+Gap Method
+```{r}
+#calculate gap statistic based on number of clusters
+gap_stat <- clusGap(df_scaled,FUN = kmeans,nstart = 25,K.max = 30,B = 50)
+
+#plot number of clusters vs. gap statistic
+fviz_gap_stat(gap_stat)
+```
+Agrupacion por clusters
+```{r}
+km<- kmeans(df, centers = 4, iter.max = 20, nstart = 20)
+fviz_cluster(km, data = df)#Grafica K means
+```
+```{r}
+df$Kmeans_Position <- km
+  
+```
+
+
+
+
+
+
+
+
+
