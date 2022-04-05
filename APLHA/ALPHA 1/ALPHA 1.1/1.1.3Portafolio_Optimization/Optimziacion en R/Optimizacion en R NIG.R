@@ -12,9 +12,8 @@ g1<- read_excel("D:/JL/Market-Index-Portafolios/APLHA/ALPHA 1/ALPHA 1.2/1.2.4 Op
                 sheet = "Datos")
 View(g1)
 #Esta base de datos ya tiene los retornos de los indices, no sacar retornos otra vez
-g1 <- g1[,-7]
-colnames(g1)<-c("Fecha","DJI","HSI","OMX20","STI","FTSE")
 
+colnames(g1)<-c("Fecha","DJI","HSI","OMX20","STI","FTSE")
 
 g1 %>%
   vis_miss()
@@ -23,7 +22,6 @@ g1 <- g1 %>%
   drop_na()
 
 rendimientos <- xts(g1[,2:6], order.by = as.Date(g1$Fecha))
-
 
 #Los datos ya son los retornos, no es necesario volverlos a sacar. 
 #Returns<- Return.calculate(PreciosAd, method = "log")[-1]
@@ -74,16 +72,19 @@ chart.RiskReward(Optimized_Port1,
                  chart.assets = TRUE)
 
 rand <- Optimized_Port1$random_portfolios
-# 1781 portafolios de diferentes pesos al asar 
+# 1794 portafolios de diferentes pesos al asar 
 
-stdv <-Optimized_Port1$random_portfolio_objective_results[[1]]$objective_measures$StdDev
+stdv <- Optimized_Port1$random_portfolio_objective_results[[1]]$objective_measures$StdDev
 
 
 medias <- Optimized_Port1$random_portfolio_objective_results[[1]]$objective_measures$mean
 
-medias <- NULL
-standDevi <- NULL
-for (i in 1:1782) {
+
+#--------
+
+mediasNIG <- NULL
+standDeviNIG <- NULL
+for (i in 1:1794) {
   medias[i] <- Optimized_Port1$random_portfolio_objective_results[[i]]$objective_measures$mean
   standDevi[i] <- Optimized_Port1$random_portfolio_objective_results[[i]]$objective_measures$StdDev
 }
@@ -92,17 +93,25 @@ Optimized_Port2 <- optimize.portfolio(rendimientos,
                                       Specs_Port1,
                                       optimize_method = "random",
                                       trace = TRUE)
+mediasNORM <- NULL
+standDevNORM <- NULL
+for (i in 1:1722) {
+  mediasNORM[i] <- Optimized_Port2$random_portfolio_objective_results[[i]]$objective_measures$mean
+  standDevNORM[i] <- Optimized_Port2$random_portfolio_objective_results[[i]]$objective_measures$StdDev
+}
 
-frontera <- tibble(volatilidad = standDevi, ExpectedRet = medias)
-
-frontera %>%
-  ggplot(aes(x=volatilidad, y=ExpectedRet))+
-  geom_point(alpha=0.3, col="blue")+
-  geom_point(data=tibble(volatilidad = Optimized_Port1$objective_measures$StdDev, ExpectedRet = Optimized_Port1$objective_measures$mean), 
-             col="red", size = 3)+
-  geom_point(data=tibble(volatilidad = Optimized_Port2$objective_measures$StdDev, ExpectedRet = Optimized_Port2$objective_measures$mean), 
-             col="green", size = 3)
-  
-
+#-------- Fronteras
+fronteraNorm <- tibble(Volatility = standDevNORM, Expected_Return = mediasNORM)
+fronteraNIG <- tibble(Volatility = standDevi, Expected_Return = medias)
 
 
+fronteraNorm %>%
+  ggplot(aes(x=volatilidad, y=ExpectedRet))+ #portafolios al asar de la normal Chicago55
+  geom_point(alpha=0.5, col="pink")+
+  geom_point(data=tibble(volatilidad = Optimized_Port2$objective_measures$StdDev,
+                         ExpectedRet = Optimized_Port2$objective_measures$mean),
+             col="red", size=3)+ #optimo de la normal Chicago20
+  geom_point(data=fronteraNIG, aes(x=volatilidad, y=ExpectedRet), alpha=0.2, col="blue")+ #portafolios al asar de la NIG Toki055
+  geom_point(data=tibble(volatilidad = Optimized_Port1$objective_measures$StdDev, 
+                         ExpectedRet = Optimized_Port1$objective_measures$mean), 
+             alpha=1, col="darkgreen", size=3) #Tokio45
