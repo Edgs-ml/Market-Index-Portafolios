@@ -12,9 +12,9 @@ g1<- read_excel("D:/JL/Market-Index-Portafolios/APLHA/ALPHA 1/ALPHA 1.2/1.2.4 Op
                 sheet = "Datos")
 View(g1)
 #Esta base de datos ya tiene los retornos de los indices, no sacar retornos otra vez
-
-colnames(g1)<-c("Fecha","DJI","HSI","OMX20","STI","FTSE")
 g1 <- g1[,-7]
+colnames(g1)<-c("Fecha","DJI","HSI","OMX20","STI","FTSE")
+
 
 g1 %>%
   vis_miss()
@@ -22,17 +22,7 @@ g1 %>%
 g1 <- g1 %>%
   drop_na()
 
-g2 <- 
-
-DJI<-xts(g1$DJI,as.Date(g1$Fecha))
-HSI<-xts(g1$HSI,as.Date(g1$Fecha))
-OMX20<-xts(g1$OMX20,as.Date(g1$Fecha))
-STI<-xts(g1$STI,as.Date(g1$Fecha))
-FTSE<-xts(g1$FTSE,as.Date(g1$Fecha))
-
-Portafolio <-merge.xts(DJI,HSI,OMX20,STI,FTSE)
-
-rendimientos <- xts(g1[,2:6], order.by = as.Date(g1$...1))
+rendimientos <- xts(g1[,2:6], order.by = as.Date(g1$Fecha))
 
 
 #Los datos ya son los retornos, no es necesario volverlos a sacar. 
@@ -64,37 +54,39 @@ Optimized_Port1 <- optimize.portfolio(rendimientos,
                                       optimize_method = "random",
                                       trace = TRUE)
 
-chart.Weights(Optimized_Port1,plot.type = "barplot")
+chart.Weights(Optimized_Port1, plot.type = "barplot")
 W_R <- extractWeights(Optimized_Port1)
+W_R
 sum(W_R)
 
-Return_opt1 <- Return.portfolio(rendimientos,W_R)
+Return_opt1 <- Return.portfolio(rendimientos, W_R)
 
 table.AnnualizedReturns(Return_opt1,
                         scale = 252,
                         geometric = FALSE)
+
 Return.cumulative(Return_opt1,
                   geometric = FALSE)
 
 chart.RiskReward(Optimized_Port1,
                  risk.col = 'StdDev',
                  return.col = 'mean',
-                 chart.assets = T)
-points(y=0.0015, x=0.010, col="red")
+                 chart.assets = TRUE)
 
 rand <- Optimized_Port1$random_portfolios
+# 1781 portafolios de diferentes pesos al asar 
 
 stdv <-Optimized_Port1$random_portfolio_objective_results[[1]]$objective_measures$StdDev
+
 
 medias <- Optimized_Port1$random_portfolio_objective_results[[1]]$objective_measures$mean
 
 medias <- NULL
 standDevi <- NULL
-for (i in 1:1839) {
+for (i in 1:1782) {
   medias[i] <- Optimized_Port1$random_portfolio_objective_results[[i]]$objective_measures$mean
   standDevi[i] <- Optimized_Port1$random_portfolio_objective_results[[i]]$objective_measures$StdDev
 }
-
 
 Optimized_Port2 <- optimize.portfolio(rendimientos,
                                       Specs_Port1,
