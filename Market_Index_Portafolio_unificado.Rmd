@@ -2,17 +2,33 @@
 title: "Market Index Portafolio Code Copilation"
 author: "Edgar Sigfrido Soto Aparicio"
 date: "11/18/2021"
-output: html_document
+output:
   html_document:
+    toc: TRUE
+    toc_depth: 3
     doc: TRUE
     doc_depth: 3
 ---
-# PRIMERA PARTE. AGRUPACIÓN DE PAÍSES CON PCA Y K-MEANS
-## 0. Cargar las librerias
-```{r, echo=FALSE}
-library(tidyverse) # Paquete que ayuda a manipular las bases de datos
-library(readxl) # Lector de archivos excel
-library(textshape) # 
+# PARTE 1. INTRODUCCIÓN
+## MOTIVACIÓN
+
+Con esta investigación queremos conocer si el metodo de reducción de dimensiones de
+
+queremos basarnos en estos indicadores para encontrar grupos de paises competitivos y estables en los cuales invertir. Con esta investigación buscamos descubrir si la aplicación de tecnicas de *Machine Learning*, como la reducción de dimensiones del *Principal Component Analysis* es efectivo para encontrar dichos grupos.
+
+Verificar si el proceso de PCA 
+
+## PLANTEAMIENTO DEL PROBLEMA Y CONTEXTO
+Nuestra investigación se basa en la modelación y la prueba de
+## PREGUNTA DE INVESTIGACIÓN
+## *SOLUTION OVERVIEW*
+
+# PARTE 2. DEFINICIÓN DE PORTAFOLIOS A TRAVÉS DE AGRUPACIÓN DE PAISES CON PCA Y K-MEANS
+### Cargar las librerias
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(textshape) #"Tools for Reshaping Text". Usado en columns_to_rownames
 library(broom)
 library(plotly)
 library(scales)
@@ -20,39 +36,48 @@ library(caTools)
 library(caret)
 library(cluster)
 library(factoextra) #Para graficar K-Means y PCA
-library(psych) 
+library(psych) #Usado por su funsión de crar matices de correlaciones de colores
 library(stats) #Para hacer el PCA
 library(naniar) #Para limpiar las bases de datos
 library(fBasics) #Analisis estadistico
 library(PerformanceAnalytics)
 library(statmod)
+library(knitr)
 ```
-## 1. Carga de Base de Datos y crear las Data Frames
-```{r}
+## 2.1. Carga de Base de Datos y crear las Data Frames
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
 df <- read_excel("~/Desktop/Market Index Portfolios/Bases de Datos/Criterios-Unificado.xlsx")
-df2 <- subset(df, Country!="China" & Country!="United States")
-df2 <- column_to_rownames(df2, loc = 1)
-# Data Frame with all variables and without China and USA
 df <- column_to_rownames(df, loc = 1)
 # Data Frame with all variables and observations
 describe(df)
+
+#---------------------------
+
 df1 <- df[,-4]
 # Data Frame without GDP and with USA and China
+
+#---------------------------
+
+df2 <- subset(df, Country!="China" & Country!="United States") 
+#eliminar a China y Estados Unidos
+df2 <- column_to_rownames(df2, loc = 1)
+# Data Frame with all variables and without China and USA
 ```
-## 2. PCA
-### 2.1. Matriz de correlaciones
-```{r, vaul}
+## 2.2. PCA
+### 2.2.1. Matriz de correlaciones
+```{r, error=FALSE}
 cor.plot(df)
 cor.plot(df1)
 cor.plot(df2)
 ```
 Todas las variables tienen una significante correlación entre si, excepto por el GDP. La correlación entre GDP y las otras variables aumenta cuando eliminamos a los outliers
 
-### 2.2. Creación de los vectores de PCA de cada Data Frame
+### 2.2.2. Creación de los vectores de PCA de cada Data Frame
 ```{r}
-pca_df<- prcomp(df)
-pca_df1<- prcomp(df1)
-pca_df2<- prcomp(df2)
+pca_df <- prcomp(df)
+pca_df1 <- prcomp(df1)
+pca_df2 <- prcomp(df2)
+
 summary(pca_df)
 summary(pca_df1)
 summary(pca_df2)
@@ -77,19 +102,19 @@ df2_PC1234_Descent <- df2_PC1234 %>%
 
 ## 3. Graficas de PCA
 #### 3.1.1. Mapa Cartesiano con PC1 y PC2 como ejes para visualizar la posición de los paises.
-```{r}
+```{r, eval=FALSE, warning=FALSE}
 fviz_pca_ind(pca_df,
              repel = TRUE,
              title = "Place of each country in a PC1 and PC2 Map [With GDP]")
 ```
 #### 3.1.2. Mapa Cartesiano con PC1 y PC2 como ejes para visualizar la posición de los paises (con GDP).
-```{r}
+```{r, eval=FALSE}
 fviz_pca_ind(pca_df1,
              repel = TRUE,
              title = "Place of each country in a PC1 and PC2 Map [Without GDP]")
 ```
 #### 3.1.3. Mapa Cartesiano con PC1 y PC2 como ejes para visualizar la posición de los paises (con GDP).
-```{r}
+```{r, eval=FALSE}
 fviz_pca_ind(pca_df2,
              repel = TRUE,
              title = "Place of each country [With GDP and without USA & China]")
@@ -209,7 +234,7 @@ Agrupación de paises en listas de 5
 
 ## Cargar librerias necesarias
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, eval=FALSE}
 library(cluster)
 library(factoextra) #Para graficar K-Means y PCA
 library(psych) 
@@ -222,10 +247,28 @@ library(PerformanceAnalytics)
 library(QuantPsyc) #Pruba multivariada
 library(statmod)
 library(ghyp)
+library(quantmod)
 library(cramer) #Para la prueba de cramer 
 ```
 
 
+```{r}
+portafolio_df1 <- c("^DJI","^HSI","^OMX20","^STI","^FTSE")
+getSymbols(portafolio_df1, from=as.Date("2001-01-01"), to=Sys.Date())
+
+```
+
+```{r}
+Symbols_ad <- NULL
+for(i in portafolio_df1){
+  assign(paste0("Ad_", i), Ad(get(i)))
+  Symbols_ad <- c(Symbols_ad, paste0("Ad_",i))
+}
+
+Portfolio <- merge.xts(get(Symbols_ad[1]),
+                       get(Symbols_ad[2]),
+                       join = "inner")
+```
 
 
 
