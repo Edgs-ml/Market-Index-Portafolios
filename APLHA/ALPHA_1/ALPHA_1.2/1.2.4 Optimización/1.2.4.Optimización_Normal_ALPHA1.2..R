@@ -7,13 +7,14 @@ library(readxl)
 library(fBasics)
 library(ghyp)
 
-g1<- read_excel("D:/JL/Market-Index-Portafolios/APLHA/ALPHA 1/ALPHA 1.2/1.2.4 Optimización/Optimizacion NIG alpha 1.2.xlsx", 
+g1<- read_excel("D:/JL/Market-Index-Portafolios/APLHA/ALPHA 1/ALPHA 1.2/1.2.4 Optimizaci?n/Optimizacion NIG alpha 1.2.xlsx", 
                 sheet = "Datos")
 
 #Esta base de datos ya tiene los retornos de los indices, no sacar retornos otra vez
 
 colnames(g1)<-c("Fecha","SPX",	"OMXC",	"FTSE","KOSPI","MSCI")
-
+g1 <- g1[,-7]
+g1 <- na.omit(g1)
 
 SPX<-xts(g1$SPX,as.Date(g1$Fecha))
 OMXC<-xts(g1$OMXC,as.Date(g1$Fecha))
