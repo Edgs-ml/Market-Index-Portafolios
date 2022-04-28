@@ -127,6 +127,7 @@ for (i in 1:1768) {
   standDeviNIG[i] <- Optimized_Port_NIG$random_portfolio_objective_results[[i]]$objective_measures$StdDev
 }
 #-------- Fronteras
+
 fronteraNorm <- tibble(Volatility = standDevNORM, Expected_Return = mediasNORM)
 fronteraNIG <- tibble(Volatility = standDeviNIG, Expected_Return = mediasNIG)
 
