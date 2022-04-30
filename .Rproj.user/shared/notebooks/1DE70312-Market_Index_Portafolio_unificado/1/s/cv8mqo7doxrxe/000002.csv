@@ -22,8 +22,7 @@ Attaching package: ‘aTSA’
 "2","
     ‘tseries’ version: 0.10-49
 
-    ‘tseries’ is a package for time series analysis and computational
-    finance.
+    ‘tseries’ is a package for time series analysis and computational finance.
 
     See ‘library(help=""tseries"")’ for details.
 
@@ -81,7 +80,7 @@ Attaching package: ‘QuantPsyc’
 
 "
 "0","library(statmod)"
-"0","library(ghyp)"
+"0","library(ghyp) #Para hacer momentos estadisticos de la NIG"
 "2","Loading required package: numDeriv
 "
 "2","
@@ -93,7 +92,7 @@ Attaching package: ‘ghyp’
     sensitivity
 
 "
-"0","library(quantmod)"
+"0","library(quantmod) #Para descargar datos"
 "2","Loading required package: TTR
 "
 "2","

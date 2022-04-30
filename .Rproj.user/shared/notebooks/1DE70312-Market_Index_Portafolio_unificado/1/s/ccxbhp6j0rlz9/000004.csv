@@ -1,0 +1,6 @@
+"0","Serie_de_datos_el_bueno_ <- read_excel(""APLHA/ALPHA_1/ALPHA_1.1/1.1.2Normality_Tests/Serie de datos (el bueno).xls"", "
+"0","    col_types = c(""date"", ""numeric"", ""numeric"", "
+"0","        ""numeric"", ""numeric"", ""numeric""))"
+"0","g1 <- Serie_de_datos_el_bueno_"
+"0","colnames(g1)<-c(""Fecha"",""DJI"",""HSI"",""OMX20"",""STI"",""FTSE"")"
+"0","g1<-textshape::column_to_rownames(g1,loc=1)"

@@ -1,0 +1,14 @@
+"0","plot(density(retornos$OMX20),col=""blue"",ylim=c(0,60), main=""Distribuciones contra normal"")+"
+"0","    lines(density(retornos$STI),"
+"0","        col=""green"")+"
+"0","    lines(density(retornos$FTSE),"
+"0","        col=""orange"")+"
+"0","    lines(density(retornos$HSI),"
+"0","        col=""black"")+"
+"0","    lines(density(retornos$DJI),"
+"0","        col=""grey"")+"
+"0","  lines(density(basenormal),"
+"0","        col=""red"")"
+"2","Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument 'x' in selecting a method for function 'lines': need at least 2 points to select a bandwidth automatically
+"

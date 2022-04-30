@@ -12,7 +12,7 @@ output:
 # PARTE 1. INTRODUCCIÓN
 ## MOTIVACIÓN
 
-Con esta investigación queremos conocer si el metodo de reducción de dimensiones de
+Con esta investigación queremos conocer si el metodo de reducción de dimensiones (PCA) de
 
 queremos basarnos en estos indicadores para encontrar grupos de paises competitivos y estables en los cuales invertir. Con esta investigación buscamos descubrir si la aplicación de tecnicas de *Machine Learning*, como la reducción de dimensiones del *Principal Component Analysis* es efectivo para encontrar dichos grupos.
 
@@ -268,7 +268,6 @@ Agrupación de paises en listas de 5
 
 
 # SEGUNDA PARTE. CARGAR SERIES DE LOS PAISES SELLECCIONADOS Y ANALIZARLAS
-
 ## Cargar librerias necesarias
 
 ```{r, include=FALSE}
@@ -288,34 +287,152 @@ library(quantmod) #Para descargar datos
 library(cramer) #Para la prueba de cramer 
 ```
 
-```{r, echo=FALSE}
-portafolio_df1 <- c("^DJI","^HSI","^OMX20","^STI","^FTSE")
-getSymbols(portafolio_df1, from=as.Date("2001-01-01"), to=Sys.Date())
+```{r}
+Serie_de_datos_el_bueno_ <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.2Normality_Tests/Serie de datos (el bueno).xls", 
+    col_types = c("date", "numeric", "numeric", 
+        "numeric", "numeric", "numeric"))
+g1 <- Serie_de_datos_el_bueno_
+colnames(g1)<-c("Fecha","DJI","HSI","OMX20","STI","FTSE")
+g1<-textshape::column_to_rownames(g1,loc=1)
 ```
 
 ```{r}
-Symbols_ad <- NULL
-for(i in portafolio_df1){
-  assign(paste0("Ad_", i), Ad(get(i)))
-  Symbols_ad <- c(Symbols_ad, paste0("Ad_",i))
-}
+g1 <- drop_na(g1)
+glimpse(g1)
+```
+```{r}
+retornos <- Return.calculate(g1,
+                           method = "log")[-1,]
+```
+Estadisticas descriptivas
+```{r}
+Estg1 <- basicStats(retornos)
+Estg1
+```
+```{r}
+adf_sti <- adf.test(retornos$STI)
 
-Portfolio <- merge.xts(get(Symbols_ad[1]),
-                       get(Symbols_ad[2]),
-                       join = "inner")
+adf_sti_table <- as.data.frame(c(adf_sti$p.value))
+adf_sti_table <- adf_sti_table %>%
+  mutate(method=adf_sti[["method"]])
+adf_sti_table <- adf_sti_table %>%
+  mutate(DF=adf_sti[["statistic"]][["Dickey-Fuller"]])
+
+
+
+adf.test(retornos$OMX20)
+adf.test(retornos$FTSE)
+adf.test(retornos$HSI)
+adf.test(retornos$DJI)
+```
+
+Prubas de Kormogorov contra distribucion normal, creada con paramaetros de nuestra serie 
+#Construccion de normal con parametros multivariados de la series
+```{r}
+m <- mean(retornos$OMX20)
+sd <- sd(retornos$OMX20)
+len <- length(retornos$OMX20)
+basenormal <- dnorm(len,m,sd)
+```
+#normal con los parametros de nuestras series
+```{r}
+ks.test(retornos$OMX20, basenormal)
+ks.test(retornos$STI, basenormal)
+ks.test(retornos$FTSE, basenormal)
+ks.test(retornos$HSI, basenormal)
+ks.test(retornos$DJI, basenormal)
+```
+Pruba de normalidad multivariada
+```{r}
+mult.norm(retornos)$mult.test
+```
+
+```{r}
+plot(density(retornos$OMX20),col="blue",ylim=c(0,60), main="Distribuciones contra normal")+
+    lines(density(retornos$STI),
+        col="green")+
+    lines(density(retornos$FTSE),
+        col="orange")+
+    lines(density(retornos$HSI),
+        col="black")+
+    lines(density(retornos$DJI),
+        col="grey")+
+  lines(density(basenormal),
+        col="red")
+```
+# Construcción de la NIG
+```{r}
+#Parametros de la NIG
+  NIG<-nigFit(retornos$STI)
+
+#Agrupar parametros en un objeto
+   a<-NIG@fit[["par"]]
+   a<-data.frame(t(a))
+   
+#NIG aleatoria con parametors univariados de nuestra serie
+   r = rnig(len,
+            alpha = a$alpha , 
+            beta = a$beta, 
+            delta = a$delta ,
+            mu= a$mu)
+   plot(density(r),
+        col="red",
+        main="NIG Univariada",
+        sub="STI index")
+   
+#Pruba de Kormogorov univariada para NIG
+ ks.test(retornos$STI,r)
+```
+
+```{r}
+#Parametros para NIG Multivariada
+multNIG <- fit.NIGmv(data=retornos,
+                     silent=FALSE)
+
+#Localizar parametros dentor de un obejto
+Mom1NIGm <- multNIG@expected.value
+Mom2NIGm <- multNIG@variance
+
+#Construccion de la funcion NIG con nuestros  parametros de la funcion multivariada
+Mnig <- rghyp(len, multNIG)
+retornos1 <- as.matrix(retornos)
+
+#Prueba cramer de comprobacion
+  #Se buscan similitudes estadisticas
+cramer.test(Mnig,
+            retornos1,
+            conf.level = .95)
+
+
+```
+### Graficas de NIG Multivariada
+```{r}
+plot(density(Mnig),col="red",ylim=c(0,60),main="Distribuciones contra NIG multivariada")+
+  lines(density(retornos$OMX20),col="green")+
+  lines(density(retornos$FTSE),col="purple")+
+  lines(density(retornos$HSI),col="black")+
+  lines(density(retornos$DJI),col="dark blue")+
+  lines(density(retornos$STI),col="pink")
+```
+
+# Comparación de portafolio 1 normal vs nig 1
+## Optimización de portafolio 1
+
+```{r}
+Specs_Port <- portfolio.spec(c("DJI",	"HSI",	"OMX20",	"STI",	"FTSE"))
+
+##### Add Constraints #####
+Specs_Port <- add.constraint(Specs_Port,type="full_investment")
+Specs_Port <- add.constraint(Specs_Port,type="long_only")
+
+##### Add Objective #####
+Specs_Port <- add.objective(Specs_Port,type="risk",name="StdDev")
+Specs_Port <- add.objective(Specs_Port,type='return',name='mean')
+Specs_Port
+
 ```
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+# Portafolio 2
 

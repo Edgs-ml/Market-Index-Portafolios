@@ -1,0 +1,4 @@
+"0","m <- mean(retornos$OMX20)"
+"0","sd <- sd(retornos$OMX20)"
+"0","len <- length(retornos$OMX20)"
+"0","basenormal <- dnorm(len,m,sd)"
