@@ -1,0 +1,6 @@
+"0","fviz_pca_ind(pca_df1,"
+"0","             repel = TRUE,"
+"0","             title = ""Place of each country in a PC1 and PC2 Map [Without GDP]"")"
+"2","Warning:"
+"2"," ggrepel: 70 unlabeled data points (too many overlaps). Consider increasing max.overlaps
+"

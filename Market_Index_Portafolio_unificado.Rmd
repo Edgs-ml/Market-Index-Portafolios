@@ -25,7 +25,7 @@ Nuestra investigación se basa en la modelación y la prueba de
 
 # PARTE 2. DEFINICIÓN DE PORTAFOLIOS A TRAVÉS DE AGRUPACIÓN DE PAISES CON PCA Y K-MEANS
 ### Cargar las librerias
-```{r, eval=FALSE, warning=FALSE, message=FALSE}
+```{r, include=FALSE, message=FALSE}
 library(tidyverse)
 library(readxl)
 library(textshape) #"Tools for Reshaping Text". Usado en columns_to_rownames
@@ -47,41 +47,54 @@ library(knitr)
 ## 2.1. Carga de Base de Datos y crear las Data Frames
 ```{r, eval=FALSE, warning=FALSE, message=FALSE}
 df <- read_excel("~/Desktop/Market Index Portfolios/Bases de Datos/Criterios-Unificado.xlsx")
+
+#df2: eliminar a China y Estados Unidos
+df2 <- df %>%
+  subset(Country!="China" & Country!="United States")
+#df: Data Frame with all variables and observations
 df <- column_to_rownames(df, loc = 1)
-# Data Frame with all variables and observations
-describe(df)
-
-#---------------------------
-
+#df1: Data frame without GDP and with all the countries
 df1 <- df[,-4]
-# Data Frame without GDP and with USA and China
-
-#---------------------------
-
-df2 <- subset(df, Country!="China" & Country!="United States") 
-#eliminar a China y Estados Unidos
+#df2: Data Frame without China and USA and with GDP
 df2 <- column_to_rownames(df2, loc = 1)
-# Data Frame with all variables and without China and USA
 ```
+```{r, echo=FALSE}
+describe(df)
+```
+```{r, echo=FALSE}
+describe(df1)
+```
+```{r, echo=FALSE}
+describe(df2)
+```
+
 ## 2.2. PCA
 ### 2.2.1. Matriz de correlaciones
-```{r, error=FALSE}
+```{r, echo=FALSE}
 cor.plot(df)
+```
+```{r, echo=FALSE}
 cor.plot(df1)
+```
+```{r, echo=FALSE}
 cor.plot(df2)
 ```
 Todas las variables tienen una significante correlación entre si, excepto por el GDP. La correlación entre GDP y las otras variables aumenta cuando eliminamos a los outliers
 
 ### 2.2.2. Creación de los vectores de PCA de cada Data Frame
-```{r}
+```{r, echo=FALSE}
 pca_df <- prcomp(df)
-pca_df1 <- prcomp(df1)
-pca_df2 <- prcomp(df2)
-
 summary(pca_df)
+```
+```{r, echo=FALSE}
+pca_df1 <- prcomp(df1)
 summary(pca_df1)
+```
+```{r, echo=FALSE}
+pca_df2 <- prcomp(df2)
 summary(pca_df2)
 ```
+
 Importancia del componente principal
 porcentaje de la varianza que se explica con el PCA1
 
@@ -122,51 +135,76 @@ fviz_pca_ind(pca_df2,
 ### 3.2. Gráfica de individuos y variables.
 ```{r}
 fviz_pca_biplot(pca_df)
+```
+```{r}
 fviz_pca_biplot(pca_df1)
+```
+```{r}
 fviz_pca_biplot(pca_df2)
 ```
+
 ### 3.3. Contribución de varianza de variables y de Componentes Principales
 ```{r}
 fviz_contrib(pca_df, choice = "var",
              title = "Percentage of Variance contribution With Variable GDP",
              addlabels = TRUE)
+```
+```{r}
 fviz_contrib(pca_df1, choice = "var",
              title = "Percentage of Variance contribution Without Variable GDP",
              addlabels = TRUE)
+```
+```{r}
 fviz_contrib(pca_df2, choice = "var",
              title = "With Variable GDP and without USA & China",
              addlabels = TRUE)
 ```
+
 ### 3.4. Porcentaje de varianza explicada por cada Componente Principal
 ```{r}
 fviz_screeplot(pca_df,
                title = "4 Principal Components With USA & China",
                addlabels = TRUE)
+```
+```{r}
 fviz_screeplot(pca_df1,
                title = "3 Principal Components Without GDP",
                addlabels = TRUE) # Porcentaje de la varianza explicada con el PCA1
+```
+```{r}
 fviz_screeplot(pca_df2,
                title = "4 Principal Components Without USA & China",
                addlabels = TRUE)
 ```
+
 ### 3.5. Eigen value
 ```{r}
 fviz_eig(pca_df, choice = "eigenvalue",
          addlabels = TRUE,
          title = "e")
+```
+```{r}
 fviz_eig(pca_df1, choice = "eigenvalue",
          addlabels = TRUE,
          title = "e")
+```
+```{r}
 fviz_eig(pca_df2, choice = "eigenvalue",
          addlabels = TRUE,
          title = "e")
 ```
+
 ### 3.6. Matriz de correlaciones con los Componentes Principales
 ```{r}
 cor.plot(df_PC1234)
+```
+```{r}
 cor.plot(df1_PC123)
+```
+```{r}
 cor.plot(df2_PC1234)
 ```
+
 
 A partir de los resultados del PCA concluimos que debemos de excluir la variable GDP y mantener a Estados Unido y China. Ahora se hará un agrupamiento de la Data Frame 1 para encontrar los grupos de paises.
 
@@ -179,7 +217,6 @@ map
 ```
 
 -----
-
 
 
 ### 4.1. Crear una nueva Data Frame con solo los valores de PC del df1
@@ -234,7 +271,7 @@ Agrupación de paises en listas de 5
 
 ## Cargar librerias necesarias
 
-```{r, echo=FALSE, warning=FALSE, eval=FALSE}
+```{r, include=FALSE}
 library(cluster)
 library(factoextra) #Para graficar K-Means y PCA
 library(psych) 
@@ -246,16 +283,14 @@ library(tseries) #Raiz Unitaria
 library(PerformanceAnalytics)
 library(QuantPsyc) #Pruba multivariada
 library(statmod)
-library(ghyp)
-library(quantmod)
+library(ghyp) #Para hacer momentos estadisticos de la NIG
+library(quantmod) #Para descargar datos
 library(cramer) #Para la prueba de cramer 
 ```
 
-
-```{r}
+```{r, echo=FALSE}
 portafolio_df1 <- c("^DJI","^HSI","^OMX20","^STI","^FTSE")
 getSymbols(portafolio_df1, from=as.Date("2001-01-01"), to=Sys.Date())
-
 ```
 
 ```{r}

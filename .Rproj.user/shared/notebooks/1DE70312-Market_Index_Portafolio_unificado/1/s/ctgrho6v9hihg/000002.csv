@@ -1,0 +1,4 @@
+"0","fviz_nbclust(df1_scaled,"
+"0","             kmeans,"
+"0","             method = ""wss"","
+"0","             k.max = 24)"

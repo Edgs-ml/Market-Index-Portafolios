@@ -1,0 +1,4 @@
+"0","portafolio_df1 <- c(""^DJI"",""^HSI"",""^OMX20"",""^STI"",""^FTSE"")"
+"0","getSymbols(portafolio_df1, from=as.Date(""2001-01-01""), to=Sys.Date())"
+"2","Error in new.session() : Could not establish session after 5 attempts.
+"
