@@ -1,0 +1,4 @@
+"0","df <- read_excel(""~/Desktop/Market Index Portfolios/Bases de Datos/Criterios-Unificado.xlsx"")
+"
+"2","Error: `path` does not exist: ‘~/Desktop/Market Index Portfolios/Bases de Datos/Criterios-Unificado.xlsx’
+"
