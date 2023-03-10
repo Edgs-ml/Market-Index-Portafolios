@@ -1,5 +1,0 @@
-"0","Specs_Port <- portfolio.spec(c(""DJI"",	""HSI"",	""OMX20"",	""STI"",	""FTSE""))
-"
-"2","Error in portfolio.spec(c(""DJI"", ""HSI"", ""OMX20"", ""STI"", ""FTSE"")) : 
-  could not find function ""portfolio.spec""
-"

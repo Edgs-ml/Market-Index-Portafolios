@@ -1,0 +1,8 @@
+"0","plot(density(Mnig),col=""red"",ylim=c(0,60),main=""Distribuciones contra NIG multivariada"")+"
+"0","  lines(density(retornos$OMX20),col=""green"")+"
+"0","  lines(density(retornos$FTSE),col=""purple"")+"
+"0","  lines(density(retornos$HSI),col=""black"")+"
+"0","  lines(density(retornos$DJI),col=""dark blue"")+"
+"0","  lines(density(retornos$STI),col=""pink"")"
+"1","integer(0)
+"
