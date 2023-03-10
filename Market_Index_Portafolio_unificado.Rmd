@@ -46,7 +46,7 @@ library(knitr)
 ```
 ## 2.1. Carga de Base de Datos y crear las Data Frames
 ```{r, eval=FALSE, warning=FALSE, message=FALSE}
-df <- read_excel("~/Desktop/Market Index Portfolios/Bases de Datos/Criterios-Unificado.xlsx")
+df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
 
 #df2: eliminar a China y Estados Unidos
 df2 <- df %>%
