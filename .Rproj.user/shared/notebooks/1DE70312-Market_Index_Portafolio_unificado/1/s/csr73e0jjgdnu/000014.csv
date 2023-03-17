@@ -1,0 +1,19 @@
+"0","plot(density(retornos$OMX20),
+     col=""blue"",
+     ylim=c(0,60), 
+     main=""Distribuciones contra normal"")+
+  lines(density(retornos$DJI),
+     col=""red"",
+     ylim=c(0,60))+
+  lines(density(retornos$HSI),
+     col=""orange"",
+     ylim=c(0,60))+
+  lines(density(retornos$STI),
+     col=""green"",
+     ylim=c(0,60))+
+  lines(density(retornos$FTSE),
+     col=""black"",
+     ylim=c(0,60))
+"
+"1","integer(0)
+"
