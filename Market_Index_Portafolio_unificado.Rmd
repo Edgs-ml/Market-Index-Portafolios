@@ -47,6 +47,7 @@ library(PerformanceAnalytics)
 library(statmod)
 library(knitr)
 library(stargazer)
+library(kableExtra)
 ```
 ## 2.1. Carga de Base de Datos y crear las Data Frames
 ```{r include=FALSE eval=FALSE warning=FALSE message=FALSE}
@@ -83,7 +84,7 @@ describe(df2)
 ## 2.2. PCA
 ### 2.2.1. Matriz de correlaciones
 ```{r, echo=FALSE}
-cor.plot(df)
+cor.plot(df, main = "Correlación de GCI, ECI, EDBI, y GDP")
 ```
 ```{r, echo=FALSE}
 cor.plot(df1)

@@ -3,7 +3,7 @@
     "path": "~/Documents/GitHub/Market-Index-Portafolios/Market_Index_Portafolio_unificado.Rmd",
     "project_path": "Market_Index_Portafolio_unificado.Rmd",
     "type": "r_markdown",
-    "hash": "1632050682",
+    "hash": "1107824132",
     "contents": "",
     "dirty": false,
     "created": 1679342439945.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "70,5",
-        "scrollLine": "62"
+        "cursorPosition": "86,57",
+        "scrollLine": "82"
     },
     "folds": "",
-    "lastKnownWriteTime": 1679343406,
+    "lastKnownWriteTime": 1679345765,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1679343474027,
+    "last_content_update": 1679345765422,
     "read_only": false,
     "read_only_alternatives": []
 }
