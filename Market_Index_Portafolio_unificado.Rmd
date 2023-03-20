@@ -3,10 +3,13 @@ title: "Market Index Portafolio Code Copilation"
 author: "Edgar Sigfrido Soto Aparicio y Juan Luis Gonzáles Jiménez"
 date: "11/18/2021"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
   html_document:
-    toc: TRUE
+    toc: yes
     toc_depth: 3
-    doc: TRUE
+    doc: yes
     doc_depth: 3
 ---
 # PARTE 1. INTRODUCCIÓN
@@ -46,7 +49,7 @@ library(knitr)
 library(stargazer)
 ```
 ## 2.1. Carga de Base de Datos y crear las Data Frames
-```{r, eval=FALSE, warning=FALSE, message=FALSE}
+```{r include=FALSE eval=FALSE warning=FALSE message=FALSE}
 df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
 
 #df2: eliminar a China y Estados Unidos
@@ -59,14 +62,17 @@ df1 <- df[,-4]
 #df2: Data Frame without China and USA and with GDP
 df2 <- column_to_rownames(df2, loc = 1)
 ```
-```{r, echo=FALSE}
-describe(df)
-stargazer(df, type = "latex", title="Indicators", align = FALSE)
-
+```{r}
 tabledf <- describe(df)
+
 kable(tabledf, format = "latex") %>%
   kable_styling(latex_options = "scale_down", font_size = 5)
 ```
+```{r}
+kable(tabledf,
+      caption = "Descripción Estadistica de los índicadores")
+```
+
 ```{r, echo=FALSE}
 describe(df1)
 ```

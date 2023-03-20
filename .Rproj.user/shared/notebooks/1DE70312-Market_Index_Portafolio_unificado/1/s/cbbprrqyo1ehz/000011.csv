@@ -1,0 +1,6 @@
+"0","fviz_pca_ind(pca_df,"
+"0","             repel = TRUE,"
+"0","             title = ""Place of each country in a PC1 and PC2 Map [With GDP]"")"
+"2","Error in fviz_pca_ind(pca_df, repel = TRUE, title = ""Place of each country in a PC1 and PC2 Map [With GDP]"") : 
+  could not find function ""fviz_pca_ind""
+"

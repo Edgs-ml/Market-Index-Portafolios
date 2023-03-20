@@ -1,0 +1,1 @@
+{"frames":[{"func":"kable(tabledf, format = \"latex\") %>% kable_styling(latex_options = \"scale_down\", \n    font_size = 5)","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in kable_styling(., latex_options = \"scale_down\", font_size = 5) : \n  could not find function \"kable_styling\"\n"}
