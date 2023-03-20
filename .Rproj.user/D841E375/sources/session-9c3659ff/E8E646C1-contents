@@ -43,6 +43,7 @@ library(fBasics) #Analisis estadistico
 library(PerformanceAnalytics)
 library(statmod)
 library(knitr)
+library(stargazer)
 ```
 ## 2.1. Carga de Base de Datos y crear las Data Frames
 ```{r, eval=FALSE, warning=FALSE, message=FALSE}
@@ -60,6 +61,11 @@ df2 <- column_to_rownames(df2, loc = 1)
 ```
 ```{r, echo=FALSE}
 describe(df)
+stargazer(df, type = "latex", title="Indicators", align = FALSE)
+
+tabledf <- describe(df)
+kable(tabledf, format = "latex") %>%
+  kable_styling(latex_options = "scale_down", font_size = 5)
 ```
 ```{r, echo=FALSE}
 describe(df1)
@@ -289,11 +295,11 @@ library(cramer) #Para la prueba de cramer
 ```
 
 ```{r}
-Serie_de_datos_el_bueno_ <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.2Normality_Tests/Serie de datos (el bueno).xls", 
+Serie_de_datos_el_bueno_ <- read_excel("~/Documents/GitHub/Market-Index-Portafolios/iNDICES.xlsx", 
     col_types = c("date", "numeric", "numeric", 
-        "numeric", "numeric", "numeric"))
+        "numeric", "numeric", "numeric", "numeric", "numeric"))
 g1 <- Serie_de_datos_el_bueno_
-colnames(g1)<-c("Fecha","DJI","HSI","OMX20","STI","FTSE")
+colnames(g1)<-c("Fecha", "SP", "OMX30","HSI","STI","DJI","KOSPI", "DAX")
 g1<-textshape::column_to_rownames(g1,loc=1)
 ```
 
@@ -311,7 +317,7 @@ Estg1 <- basicStats(retornos)
 Estg1
 ```
 ```{r}
-adf_sti <- adf.test(retornos$STI)
+adf_sti <- adf.test(retornos$SP)
 
 adf_sti_table <- as.data.frame(c(adf_sti$p.value))
 adf_sti_table <- adf_sti_table %>%
@@ -321,27 +327,32 @@ adf_sti_table <- adf_sti_table %>%
 
 
 
-adf.test(retornos$OMX20)
-adf.test(retornos$FTSE)
+adf.test(retornos$SP)
+adf.test(retornos$OMX30)
 adf.test(retornos$HSI)
+adf.test(retornos$STI)
 adf.test(retornos$DJI)
+adf.test(retornos$KOSPI)
+adf.test(retornos$DAX)
 ```
 
 Prubas de Kormogorov contra distribucion normal, creada con paramaetros de nuestra serie 
 #Construccion de normal con parametros multivariados de la series
 ```{r}
-m <- mean(retornos$OMX20)
-sd <- sd(retornos$OMX20)
-len <- length(retornos$OMX20)
+m <- mean(retornos$SP)
+sd <- sd(retornos$SP)
+len <- length(retornos$SP)
 basenormal <- dnorm(len,m,sd)
 ```
 #normal con los parametros de nuestras series
 ```{r}
-ks.test(retornos$OMX20, basenormal)
-ks.test(retornos$STI, basenormal)
-ks.test(retornos$FTSE, basenormal)
+ks.test(retornos$SP, basenormal)
+ks.test(retornos$OMX30, basenormal)
 ks.test(retornos$HSI, basenormal)
+ks.test(retornos$STI, basenormal)
 ks.test(retornos$DJI, basenormal)
+ks.test(retornos$KOSPI, basenormal)
+ks.test(retornos$DAX, basenormal)
 ```
 Pruba de normalidad multivariada
 ```{r}
@@ -349,27 +360,33 @@ mult.norm(retornos)$mult.test
 ```
 
 ```{r echo = FALSE}
-plot(density(retornos$OMX20),
-     col="blue",
+plot(density(retornos$SP),
+     col="red",
      ylim=c(0,60), 
      main="Distribuciones contra normal")+
-  lines(density(retornos$DJI),
-     col="red",
-     ylim=c(0,60))+
-  lines(density(retornos$HSI),
-     col="orange",
-     ylim=c(0,60))+
-  lines(density(retornos$STI),
+  lines(density(retornos$OMX30),
      col="green",
      ylim=c(0,60))+
-  lines(density(retornos$FTSE),
-     col="black",
-     ylim=c(0,60))
+  lines(density(retornos$HSI),
+     col="blue",
+     ylim=c(0,60))+
+  lines(density(retornos$STI),
+     col="orange",
+     ylim=c(0,60))+
+  lines(density(retornos$DJI),
+     col="pink",
+     ylim=c(0,60)+  
+  lines(density(retornos$KOSPI),
+     col="purple",
+     ylim=c(0,60))+
+  lines(density(retornos$DAX),
+     col="brown",
+     ylim=c(0,60)))
 ```
 # Construcción de la NIG
 ```{r}
 #Parametros de la NIG
-  NIG<-nigFit(retornos$STI)
+  NIG<-nigFit(retornos$SP)
 
 #Agrupar parametros en un objeto
    a<-NIG@fit[["par"]]
@@ -377,17 +394,17 @@ plot(density(retornos$OMX20),
    
 #NIG aleatoria con parametors univariados de nuestra serie
    r = rnig(len,
-            alpha = a$alpha , 
+            alpha = a$alpha, 
             beta = a$beta, 
-            delta = a$delta ,
+            delta = a$delta,
             mu= a$mu)
    plot(density(r),
-        col="red",
+        col="black",
         main="NIG Univariada",
-        sub="STI index")
+        sub="SP index")
    
 #Pruba de Kormogorov univariada para NIG
- ks.test(retornos$STI,r)
+ ks.test(retornos$SP,r)
 ```
 
 ```{r}
@@ -413,29 +430,32 @@ cramer.test(Mnig,
 ```
 ### Graficas de NIG Multivariada
 ```{r echo = FALSE}
-plot(density(Mnig),col="red",ylim=c(0,60),main="Distribuciones contra NIG multivariada")+
-  lines(density(retornos$OMX20),col="green")+
-  lines(density(retornos$FTSE),col="purple")+
-  lines(density(retornos$HSI),col="black")+
-  lines(density(retornos$DJI),col="dark blue")+
-  lines(density(retornos$STI),col="pink")
+plot(density(Mnig),col="black",
+     ylim=c(0,60),
+     main="Distribuciones contra NIG multivariada")+
+  lines(density(retornos$SP),col="red")+
+  lines(density(retornos$OMX30),col="green")+
+  lines(density(retornos$HSI),col="blue")+
+  lines(density(retornos$STI),col="orange")+
+  lines(density(retornos$DJI),col="pink")+
+  lines(density(retornos$KOSPI),col="purple")+
+  lines(density(retornos$DAX),col="brown")
 ```
 
-# Comparación de portafolio 1 normal vs nig 1
+####### Comparación de portafolio 1 normal vs nig 1
 ## Optimización de portafolio 1
 
 ```{r}
-Specs_Port <- portfolio.spec(c("DJI",	"HSI",	"OMX20",	"STI",	"FTSE"))
+Specs_Port_Norm <- portfolio.spec(retornos)
 
 ##### Add Constraints #####
-Specs_Port <- add.constraint(Specs_Port,type="full_investment")
-Specs_Port <- add.constraint(Specs_Port,type="long_only")
+Specs_Port_Norm <- add.constraint(Specs_Port_Norm,type = "full_investment")
+Specs_Port_Norm <- add.constraint(Specs_Port_Norm,type="long_only")
 
 ##### Add Objective #####
-Specs_Port <- add.objective(Specs_Port,type="risk",name="StdDev")
-Specs_Port <- add.objective(Specs_Port,type='return',name='mean')
-Specs_Port
-
+Specs_Port_Norm <- add.objective(Specs_Port_Norm,type="risk",name="StdDev")
+Specs_Port_Norm <- add.objective(Specs_Port_Norm,type='return',name='mean')
+Specs_Port_Norm
 ```
 
 # Optimizar portafolio 1 con NIG y con Nomral y comparar las curvas de Markowits para ver cual es mejor y comparar sus Sharps
@@ -448,34 +468,73 @@ library(DEoptim)
 library(readxl)
 library(fBasics)
 library(ghyp)
+library(PortfolioAnalytics)
 ```
 
+#### Optimization
 ```{r}
-colnames(g1)<-c("Fecha","DJI",	"HSI",	"OMX20",	"STI",	"FTSE")
-
-DJI<-xts(g1$DJI,as.Date(g1$Fecha))
-HSI<-xts(g1$HSI,as.Date(g1$Fecha))
-OMX20<-xts(g1$OMX20,as.Date(g1$Fecha))
-STI<-xts(g1$STI,as.Date(g1$Fecha))
-FTSE<-xts(g1$FTSE,as.Date(g1$Fecha))
+Optimized_Port_Norm <- optimize.portfolio(retornos,
+                                      Specs_Port_Norm,
+                                      trace = TRUE)
 ```
-
-```{r, eval=FALSE, warning=FALSE, message=FALSE}
-DFOpt1Norm <- read_excel("~/Documents/GitHub/Market-Index-Portafolios/iNDICES.xlsx",
-    col_types = c("date", "numeric", "numeric", 
-        "numeric", "numeric", "numeric", "numeric", "numeric"))
-colnames(DFOpt1Norm) <- ("Fecha", "SP", "OMX30", "HSI", "STI", "KOSPI", "DAX")
-DFOpt1Norm<-textshape::column_to_rownames(DFOpt1Norm,loc=1)
-```
-
-
-```{r, echo=FALSE}
-describe(DFOpt1Norm)
-```
-
 ```{r}
-PortfolioOpt1Norm <- 
+chart.Weights(Optimized_Port_NORM,plot.type="barplot")
+W_R_NORM <- extractWeights(Optimized_Port_NORM)
+sum(W_R_NORM)
 ```
+Porrtfolio analysis Normal Distribution
+```{r}
+Return_opt_NORM <- Return.portfolio(Portafolio_NORM,
+                                    W_R_NORM)
+
+table.AnnualizedReturns(Return_opt_NORM,
+                        scale = 252,
+                        geometric = FALSE)
+
+Return.cumulative(Return_opt_NORM,
+                  geometric = FALSE)
+
+chart.RiskReward(Optimized_Port_NORM,
+                 risk.col = 'StdDev',
+                 return.col = 'mean',
+                 chart.assets = T)
+```
+
+### Port NIG
+##### Add Constraints #####
+```{r}
+
+Specs_Port <- add.constraint(Specs_Port,type="full_investment")
+Specs_Port <- add.constraint(Specs_Port,type="long_only")
+
+
+
+```
+##### Add Objective #####
+```{r}
+
+Specs_Port <- add.objective(Specs_Port,type="risk",name="StdDev")
+Specs_Port <- add.objective(Specs_Port,type='return',name='mean')
+Specs_Port
+
+covnig<-function(R,portfolio){
+  a<-fit.NIGmv(R,silent=TRUE)
+  COV<-a@variance
+  mu<-a@expected.value
+  mu<-matrix(mu,ncol = 1)
+  resultado<-list(mu=mu,sigma=COV)
+  return(resultado)
+}
+
+Optimized_Port_NIG <- optimize.portfolio(rendimientos,
+                                         Specs_Port,
+                                         momentFUN = covnig,
+                                         optimize_method = "random",
+                                         trace = TRUE)
+```
+
+
+
 
 
 

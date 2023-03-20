@@ -1,0 +1,9 @@
+"0","Optimized_Port_Norm <- optimize.portfolio(retornos,"
+"0","                                      Specs_Port_Norm,"
+"0","                                      trace = TRUE)"
+"2","Leverage constraint min_sum and max_sum are restrictive, 
+              consider relaxing. e.g. 'full_investment' constraint should be min_sum=0.99 and max_sum=1.01
+"
+"2","Error in result[2, ] <- rep(1/length(seed), length(seed)) : 
+  incorrect number of subscripts on matrix
+"

@@ -1,4 +1,0 @@
-"0","colnames(DFOpt1Norm) <- (""Fecha"", ""SP"", ""OMX30"", ""HSI"", ""STI"", ""KOSPI"", ""DAX"")
-"
-"2","Error: unexpected ',' in ""colnames(DFOpt1Norm) <- (""Fecha"",""
-"

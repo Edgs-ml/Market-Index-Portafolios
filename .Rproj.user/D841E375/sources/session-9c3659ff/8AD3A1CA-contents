@@ -1,0 +1,1 @@
+kable(Estg1, format = "latex")

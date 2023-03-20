@@ -1,0 +1,41 @@
+library(tidyverse)
+library(readxl)
+library(textshape) #"Tools for Reshaping Text". Usado en columns_to_rownames
+library(broom)
+library(plotly)
+library(scales)
+library(caTools)
+library(caret)
+library(cluster)
+library(factoextra) #Para graficar K-Means y PCA
+library(psych) #Usado por su funsión de crar matices de correlaciones de colores
+library(stats) #Para hacer el PCA
+library(naniar) #Para limpiar las bases de datos
+library(fBasics) #Analisis estadistico
+library(PerformanceAnalytics)
+library(statmod)
+library(knitr)
+library(stargazer)
+library(xtable)
+library(kableExtra)
+
+
+df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
+
+#df2: eliminar a China y Estados Unidos
+df2 <- df %>%
+  subset(Country!="China" & Country!="United States")
+#df: Data Frame with all variables and observations
+df <- column_to_rownames(df, loc = 1)
+#df1: Data frame without GDP and with all the countries
+df1 <- df[,-4]
+#df2: Data Frame without China and USA and with GDP
+df2 <- column_to_rownames(df2, loc = 1)
+
+
+describe(df)
+tabledf <- describe(df)
+print(xtable(tabledf))
+
+kable(tabledf, format = "latex", booktabs = T) %>%
+  kable_styling(latex_options = "scale_down", font_size = 35)
