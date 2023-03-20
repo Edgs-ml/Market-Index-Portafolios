@@ -87,7 +87,7 @@ describe(df2)
 cor.plot(df, main = "Correlación de GCI, ECI, EDBI, y GDP")
 ```
 ```{r, echo=FALSE}
-cor.plot(df1)
+cor.plot(df1, main = "Correlación de GCI, ECI, y EDBI")
 ```
 ```{r, echo=FALSE}
 cor.plot(df2)
@@ -130,8 +130,8 @@ df2_PC1234_Descent <- df2_PC1234 %>%
 #### 3.1.1. Mapa Cartesiano con PC1 y PC2 como ejes para visualizar la posición de los paises.
 ```{r, eval=FALSE, warning=FALSE}
 fviz_pca_ind(pca_df,
-             repel = TRUE,
-             title = "Place of each country in a PC1 and PC2 Map [With GDP]")
+             repel = FALSE,
+             title = "Lugar de Países dentro de los Componentes Principales 1 y 2 [con GDP]")
 ```
 #### 3.1.2. Mapa Cartesiano con PC1 y PC2 como ejes para visualizar la posición de los paises (con GDP).
 ```{r, eval=FALSE}
@@ -226,7 +226,9 @@ A partir de los resultados del PCA concluimos que debemos de excluir la variable
 Crear grupos de 5 paises con base en los 3 Componentes Principales de la Data Frame 1
 
 ```{r}
-map <- fviz_pca_ind(pca_df1)
+map <- fviz_pca_ind(pca_df1, 
+                    repel = TRUE,
+                    title="Coordenadas de cada País Dentro de Componente Principal 1 y 2")
 map
 ```
 
@@ -301,7 +303,7 @@ library(quantmod) #Para descargar datos
 library(cramer) #Para la prueba de cramer 
 ```
 
-```{r}
+```{r include=FALSE}
 Serie_de_datos_el_bueno_ <- read_excel("~/Documents/GitHub/Market-Index-Portafolios/iNDICES.xlsx", 
     col_types = c("date", "numeric", "numeric", 
         "numeric", "numeric", "numeric", "numeric", "numeric"))

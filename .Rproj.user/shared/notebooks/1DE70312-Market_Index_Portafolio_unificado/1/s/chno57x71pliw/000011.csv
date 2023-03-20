@@ -1,0 +1,4 @@
+"0","map <- fviz_pca_ind(pca_df1, "
+"0","                    repel = TRUE,"
+"0","                    title=""Coordenadas de cada País Dentro de Componente Principal 1 y 2"")"
+"0","map"
