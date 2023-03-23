@@ -1,0 +1,26 @@
+{
+    "id": "E6EC72CF",
+    "path": "~/Documents/GitHub/Market-Index-Portafolios/Market_Index_Portafolio_unificado.Rmd",
+    "project_path": "Market_Index_Portafolio_unificado.Rmd",
+    "type": "r_markdown",
+    "hash": "2914671795",
+    "contents": "",
+    "dirty": false,
+    "created": 1679496842759.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "372,13",
+        "scrollLine": "366"
+    },
+    "folds": "380|73|442|89|\n381|30|442|89|\n383|21|398|0|\n400|20|407|0|\n409|6|412|0|\n413|6|416|0|\n418|6|421|0|\n422|6|440|0|\n443|65|449|3|\n444|6|449|0|\n450|45|488|3|\n451|6|459|0|\n461|6|463|0|\n465|19|488|0|\n534|32|548|51|\n535|19|546|0|\n549|31|563|0|\n551|6|562|0|\n554|22|557|0|\n558|20|561|15|\n564|125|644|0|\n566|22|575|0|\n577|17|605|0|\n578|6|582|0|\n583|6|587|0|\n589|6|604|0|\n606|12|644|0|\n607|27|615|3|\n608|6|615|0|\n616|25|644|0|\n617|6|637|0|\n623|30|630|0|\n645|14|658|0|\n",
+    "lastKnownWriteTime": 1679537217,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1679537217855,
+    "read_only": false,
+    "read_only_alternatives": []
+}

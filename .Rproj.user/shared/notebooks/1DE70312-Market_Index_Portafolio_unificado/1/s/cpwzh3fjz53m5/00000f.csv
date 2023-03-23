@@ -1,3 +1,0 @@
-"0","fviz_screeplot(pca_df1,"
-"0","               title = ""3 Principal Components Without GDP"","
-"0","               addlabels = TRUE) # Porcentaje de la varianza explicada con el PCA1"
