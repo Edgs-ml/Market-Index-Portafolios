@@ -1,4 +1,0 @@
-"0","m <- mean(retornos$SP)"
-"0","sd <- sd(retornos$SP)"
-"0","len <- length(retornos$SP)"
-"0","basenormal <- dnorm(len,m,sd)"

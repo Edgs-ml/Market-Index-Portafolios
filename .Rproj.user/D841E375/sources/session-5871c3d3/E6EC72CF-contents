@@ -51,6 +51,7 @@ library(kableExtra)
 library(ggpubr)
 library(ggdist)
 library(ggExtra)
+library(ggbeeswarm)
 ```
 ## 2.1. Carga de Base de Datos y crear las Data Frames
 ```{r include=FALSE eval=FALSE warning=FALSE message=FALSE}
@@ -68,7 +69,7 @@ df2 <- column_to_rownames(df2, loc = 1)
 
 kable(head(df)) #Tabla de los primero paises en Latex
 ```
-#### GDP dgraphs
+### GDP dgraphs
 ```{r}
 bxp_gdp <- df_plot %>%
   ggplot(aes(x=GDP, y=0))+
@@ -129,6 +130,7 @@ ggarrange(bxp_edbi, vio_edbi,
           nrow = 1)
 ```
 ### ECI graphs
+
 ```{r}
 bxp_gci <- df_plot %>%
   ggplot(aes(x=GCI, y=0))+
