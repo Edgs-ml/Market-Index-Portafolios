@@ -50,6 +50,7 @@ library(stargazer)
 library(kableExtra)
 library(ggpubr)
 library(ggdist)
+library(ggExtra)
 ```
 ## 2.1. Carga de Base de Datos y crear las Data Frames
 ```{r include=FALSE eval=FALSE warning=FALSE message=FALSE}
@@ -67,7 +68,7 @@ df2 <- column_to_rownames(df2, loc = 1)
 
 kable(head(df)) #Tabla de los primero paises en Latex
 ```
-#### DGP dgraphs
+#### GDP dgraphs
 ```{r}
 bxp_gdp <- df_plot %>%
   ggplot(aes(x=GDP, y=0))+
@@ -75,14 +76,24 @@ bxp_gdp <- df_plot %>%
   geom_quasirandom()+
   geom_label(data=df_plot %>% 
                filter(GDP>1.0e+13), aes(label=Country))
-sp_gdp <- df_plot %>%
-  ggplot(aes(x=GDP, y=0))+
-  geom_violin()+
-  geom_label(data=df_plot %>% 
-               filter(GDP>1.0e+13), aes(label=Country))
 
-ggarrange(bxp_gdp, sp_gdp, 
-          labels = c("A", "B"),
+#vio_gdp <- df_plot %>%
+#  ggplot(aes(x=GDP, y=GCI))+
+#  geom_violin()+
+#  geom_label(data=df_plot %>% 
+#               filter(GDP>1.0e+13), aes(label=Country))
+
+hist_gdp <- df_plot %>%
+  ggplot(aes(x=GDP))+
+  geom_histogram(bins=100)+
+  geom_label(data = df_plot %>%
+               filter(GDP>1.0e+13), aes(x=GDP,y=Country, 
+                                        label=Country))
+
+#stat_desc_gdp <- kable(describe(df_plot$GDP), )
+
+ggarrange(bxp_gdp, hist_gdp,
+          labels = c("Boxplot", "Histogram"),
           ncol = 2,
           nrow = 1)
 ```
@@ -93,11 +104,11 @@ bxp_eci <- df_plot %>%
   geom_boxplot()+
   geom_quasirandom()
 
-sp_eci <- df_plot %>%
+vio_eci <- df_plot %>%
   ggplot(aes(x=ECI, y=0))+
   geom_violin()
 
-ggarrange(bxp_eci, sp_eci, 
+ggarrange(bxp_eci, vio_eci, 
           labels = c("A", "B"),
           ncol = 2,
           nrow = 1)
@@ -108,11 +119,11 @@ bxp_edbi <- df_plot %>%
   ggplot(aes(x=EDBI, y=0))+
   geom_boxplot()+
   geom_quasirandom()
-sp_edbi <- df_plot %>%
+vio_edbi <- df_plot %>%
   ggplot(aes(x=EDBI, y=0))+
   geom_violin()
 
-ggarrange(bxp_edbi, sp_edbi, 
+ggarrange(bxp_edbi, vio_edbi, 
           labels = c("A", "B"),
           ncol = 2,
           nrow = 1)
@@ -123,11 +134,11 @@ bxp_gci <- df_plot %>%
   ggplot(aes(x=GCI, y=0))+
   geom_boxplot()+
   geom_quasirandom()
-sp_gci <- df_plot %>%
+vio_gci <- df_plot %>%
   ggplot(aes(x=GCI, y=0))+
   geom_violin()
 
-ggarrange(bxp_gci, sp_eci, 
+ggarrange(bxp_gci, vio_eci, 
           labels = c("A", "B"),
           ncol = 2,
           nrow = 1)
@@ -200,6 +211,13 @@ df1_PC123_Descent <- df1_PC123 %>%
 df2_PC1234 <- cbind(df2, pca_df2$x)
 df2_PC1234_Descent <- df2_PC1234 %>%
   arrange(desc(PC1))
+
+kable(head(df_PC1234_Descent, 5), 
+      format = "latex")
+kable(head(df1_PC123_Descent, 5),
+      format = "latex")
+kable(head(df2_PC1234_Descent, 5),
+      format = "latex")
 ```
 
 ## 3. Graficas de PCA
@@ -208,61 +226,50 @@ df2_PC1234_Descent <- df2_PC1234 %>%
 fviz_pca_ind(pca_df,
              repel = FALSE,
              title = "Lugar de Países dentro de los Componentes Principales 1 y 2 [con GDP]")
-```
-#### 3.1.2. Mapa Cartesiano con PC1 y PC2 como ejes para visualizar la posición de los paises (con GDP).
-```{r, eval=FALSE}
+
 fviz_pca_ind(pca_df1,
              repel = TRUE,
              title = "Place of each country in a PC1 and PC2 Map [Without GDP]")
-"quitar los nombres de los puntos"
-```
-#### 3.1.3. Mapa Cartesiano con PC1 y PC2 como ejes para visualizar la posición de los paises (con GDP).
-```{r, eval=FALSE}
+
 fviz_pca_ind(pca_df2,
              repel = TRUE,
              title = "Place of each country [With GDP and without USA & China]")
 ```
 ### 3.2. Gráfica de individuos y variables.
 ```{r}
-fviz_pca_biplot(pca_df)
-```
-```{r}
-fviz_pca_biplot(pca_df1)
-```
-```{r}
-fviz_pca_biplot(pca_df2)
+Biplot_fvis_df <- fviz_pca_biplot(pca_df)
+
+Biplot_fvis_df1 <- fviz_pca_biplot(pca_df1)
+
+Biplot_fvis_df2 <- fviz_pca_biplot(pca_df2)
 ```
 
 ### 3.3. Contribución de varianza de variables y de Componentes Principales
 ```{r}
-fviz_contrib(pca_df, choice = "var",
-             title = "Percentage of Variance contribution With Variable GDP",
+Contrib_var_fvis_df <- fviz_contrib(pca_df, choice = "var",
+             title = "Porcentaje de Varianza Contribuida con GDP y todas las Observaciones",
              addlabels = TRUE)
-```
-```{r}
-fviz_contrib(pca_df1, choice = "var",
+
+Contrib_var_fvis_df1 <- fviz_contrib(pca_df1, choice = "var",
              title = "Percentage of Variance contribution Without Variable GDP",
              addlabels = TRUE)
-```
-```{r}
-fviz_contrib(pca_df2, choice = "var",
+
+Contrib_var_fvis_df2 <- fviz_contrib(pca_df2, choice = "var",
              title = "With Variable GDP and without USA & China",
              addlabels = TRUE)
 ```
 
 ### 3.4. Porcentaje de varianza explicada por cada Componente Principal
 ```{r}
-fviz_screeplot(pca_df,
+Porcen_var_fvis_df <- fviz_screeplot(pca_df,
                title = "4 Principal Components With USA & China",
                addlabels = TRUE)
-```
-```{r}
-fviz_screeplot(pca_df1,
+
+Porcen_var_fvis_df1 <- fviz_screeplot(pca_df1,
                title = "3 Principal Components Without GDP",
                addlabels = TRUE) # Porcentaje de la varianza explicada con el PCA1
-```
-```{r}
-fviz_screeplot(pca_df2,
+
+Porcen_var_fvis_df2 <- fviz_screeplot(pca_df2,
                title = "4 Principal Components Without USA & China",
                addlabels = TRUE)
 ```
@@ -272,29 +279,46 @@ fviz_screeplot(pca_df2,
 fviz_eig(pca_df, choice = "eigenvalue",
          addlabels = TRUE,
          title = "e")
-```
-```{r}
+
 fviz_eig(pca_df1, choice = "eigenvalue",
          addlabels = TRUE,
          title = "e")
-```
-```{r}
+
 fviz_eig(pca_df2, choice = "eigenvalue",
          addlabels = TRUE,
          title = "e")
 ```
 
+## 3.5.1 
+```{r}
+#PCA DF
+ggarrange(Contrib_var_fvis_df, Porcen_var_fvis_df, Biplot_fvis_df,
+          ncol = 2,
+          nrow = 2)
+
+#,labels = c("Porcentaje de Varianza Contribuida con GDP y todas las Observaciones",
+#                     "4 Componentes Principales con Estados Unidos y China", 
+#                     "Valor de Explicación del Componente Principal como Vector")
+
+#PCA DF1
+ggarrange(Contrib_var_fvis_df1, Porcen_var_fvis_df1, Biplot_fvis_df1,
+          ncol = 2,
+          nrow = 2)
+
+#PCA DF2
+ggarrange(Contrib_var_fvis_df2, Porcen_var_fvis_df2, Biplot_fvis_df2,
+          ncol = 2,
+          nrow = 2)
+```
+
 ### 3.6. Matriz de correlaciones con los Componentes Principales
 ```{r}
 cor.plot(df_PC1234)
-```
-```{r}
+
 cor.plot(df1_PC123)
-```
-```{r}
+
 cor.plot(df2_PC1234)
 ```
-
 
 A partir de los resultados del PCA concluimos que debemos de excluir la variable GDP y mantener a Estados Unido y China. Ahora se hará un agrupamiento de la Data Frame 1 para encontrar los grupos de paises.
 
@@ -304,7 +328,8 @@ Crear grupos de 5 paises con base en los 3 Componentes Principales de la Data Fr
 ```{r}
 map <- fviz_pca_ind(pca_df1, 
                     repel = TRUE,
-                    title="Coordenadas de cada País Dentro de Componente Principal 1 y 2")
+                    title=NULL)
+  
 map
 ```
 ```{r}
@@ -325,7 +350,6 @@ fviz_cluster(k_map, data = coordinates_map)
 ```
 
 -----
-
 
 ### 4.1. Crear una nueva Data Frame con solo los valores de PC del df1
 ```{r}
@@ -638,6 +662,9 @@ Optimized_Port_NIG <- optimize.portfolio(rendimientos,
 ```
 
 
+```{r}
+…
+```
 
 
 
@@ -646,9 +673,77 @@ Optimized_Port_NIG <- optimize.portfolio(rendimientos,
 # Portafolio 2
 
 
+# PARTE 3
 
+### Portfolio Evaluation
+```{r}
+Return_opt3 <- Return.portfolio(Returns_3, W3)
 
+table.AnnualizedReturns(Return_opt3,
+                        scale = 252,
+                        geometric = FALSE)
+Return.cumulative(Return_opt3,
+                  geometric = FALSE)
 
+plot(cumsum(Return_opt3))
+
+varRisk(Portfolio_3, W3)
+
+DtaFrm_Portfolio2 <- as.data.frame(Portfolio_2)
+
+chart.RiskReward(Optimized_Port3,
+                 risk.col = 'StdDev',
+                 return.col = 'mean',
+                 chart.assets = TRUE)
+combine.portfolios(Optimized_Port2)
+
+chart.EfficientFrontierOverlay(Optimized_Port1,
+                               risk.col = 'StdDev',
+                               return.col = 'mean',
+                               chart.assets = TRUE)
+```
+# Comparación
+#--------------Graficas comparativas
+```{r}
+rand <- Optimized_Port1$random_portfolios
+# 1794 portafolios de diferentes pesos al asar 
+
+stdv <- Optimized_Port1$random_portfolio_objective_results[[1]]$objective_measures$StdDev
+
+medias <- Optimized_Port1$random_portfolio_objective_results[[1]]$objective_measures$mean
+```
+
+```{r}
+mediasNORM <- NULL
+standDevNORM <- NULL
+for (i in 1:1682) {
+  mediasNORM[i] <- Optimized_Port_Normal$random_portfolio_objective_results[[i]]$objective_measures$mean
+  standDevNORM[i] <- Optimized_Port_Normal$random_portfolio_objective_results[[i]]$objective_measures$StdDev
+}
+
+mediasNIG <- NULL
+standDeviNIG <- NULL
+for (i in 1:1768) {
+  mediasNIG[i] <- Optimized_Port_NIG$random_portfolio_objective_results[[i]]$objective_measures$mean
+  standDeviNIG[i] <- Optimized_Port_NIG$random_portfolio_objective_results[[i]]$objective_measures$StdDev
+}
+```
+#### Fronteras
+```{r}
+fronteraNorm <- tibble(Volatility = standDevNORM, Expected_Return = mediasNORM)
+fronteraNIG <- tibble(Volatility = standDeviNIG, Expected_Return = mediasNIG)
+
+fronteraNorm %>%
+  ggplot(aes(x=Volatility, y=Expected_Return))+
+  geom_point(alpha=0.5, col="pink")+
+  geom_point(data=tibble(Volatility = Optimized_Port_Normal$objective_measures$StdDev,
+                         Expected_Return = Optimized_Port_Normal$objective_measures$mean),
+             col="red", size=3)+
+  geom_point(data=fronteraNIG, aes(x=Volatility, y=Expected_Return), alpha=0.2, col="blue")+
+  geom_point(data=tibble(Volatility = Optimized_Port_NIG$objective_measures$StdDev, 
+                         Expected_Return = Optimized_Port_NIG$objective_measures$mean), 
+             alpha=1, col="darkgreen", size=3)
+```
 
 
 

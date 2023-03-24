@@ -1,0 +1,5 @@
+"0",""
+"0","#PCA DF2"
+"0","ggarrange(Contrib_var_fvis_df2, Porcen_var_fvis_df2, Biplot_fvis_df2,"
+"0","          ncol = 2,"
+"0","          nrow = 2)"

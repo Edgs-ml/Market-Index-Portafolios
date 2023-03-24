@@ -1,0 +1,4 @@
+"0",""
+"0","fviz_eig(pca_df2, choice = ""eigenvalue"","
+"0","         addlabels = TRUE,"
+"0","         title = ""e"")"
