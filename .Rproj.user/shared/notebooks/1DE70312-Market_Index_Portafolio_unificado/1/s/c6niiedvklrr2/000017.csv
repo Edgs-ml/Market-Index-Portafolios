@@ -1,0 +1,5 @@
+"0","Biplot_fvis_df <- fviz_pca_biplot(pca_df)"
+"0",""
+"0","Biplot_fvis_df1 <- fviz_pca_biplot(pca_df1)"
+"0",""
+"0","Biplot_fvis_df2 <- fviz_pca_biplot(pca_df2)"
