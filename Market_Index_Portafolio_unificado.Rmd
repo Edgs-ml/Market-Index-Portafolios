@@ -27,7 +27,7 @@ Nuestra investigación se basa en la modelación y la prueba de
 ## 1.4 *SOLUTION OVERVIEW*
 
 # PARTE 2. DEFINICIÓN DE PORTAFOLIOS A TRAVÉS DE AGRUPACIÓN DE PAISES CON PCA Y K-MEANS
-### Cargar las librerias
+Cargar las librerias
 ```{r include=FALSE message=FALSE}
 library(tidyverse)
 library(readxl)
@@ -53,7 +53,7 @@ library(ggdist)
 library(ggExtra)
 library(ggbeeswarm)
 ```
-## 2.1. Carga de Base de Datos y crear las Data Frames
+## 2.1. Descripción de los índices seleccionados
 ```{r include=FALSE eval=FALSE warning=FALSE message=FALSE}
 df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
 df_plot <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
@@ -130,8 +130,7 @@ ggarrange(bxp_edbi, vio_edbi,
           nrow = 1)
 ```
 ### ECI graphs
-
-```{r}
+```{r echo=FALSE}
 bxp_gci <- df_plot %>%
   ggplot(aes(x=GCI, y=0))+
   geom_boxplot()+
@@ -145,41 +144,32 @@ ggarrange(bxp_gci, vio_eci,
           ncol = 2,
           nrow = 1)
 ```
-```{r}
+```{r echo=FALSE}
 ggarrange(bxp_eci, bxp_gci, bxp_edbi, bxp_gdp,
           labels = c("ECI Boxplot", "GCI Boxplot", "EDBI Boxplot", "GDP Boxplot"),
           ncol = 2,
           nrow = 2)
 ```
 
-```{r}
+```{r echo=FALSE}
 tabledf <- describe(df)
 
 kable(tabledf, format = "latex") %>%
   kable_styling(latex_options = "scale_down", font_size = 5)
 ```
-```{r}
+```{r echo=FALSE}
 kable(tabledf,
       caption = "Descripción Estadistica de los índicadores")
 ```
-
 ```{r, echo=FALSE}
 describe(df1)
-```
-```{r, echo=FALSE}
-describe(df2)
 ```
 
 ## 2.2. PCA
 ### 2.2.1. Matriz de correlaciones
 ```{r, echo=FALSE}
 cor.plot(df, main = "Correlación de GCI, ECI, EDBI, y GDP")
-```
-```{r, echo=FALSE}
 cor.plot(df1, main = "Correlación de GCI, ECI, y EDBI")
-```
-```{r, echo=FALSE}
-cor.plot(df2)
 ```
 Todas las variables tienen una significante correlación entre si, excepto por el GDP. La correlación entre GDP y las otras variables aumenta cuando eliminamos a los outliers
 
@@ -390,7 +380,7 @@ fviz_cluster(km, data = Kdf1_Descent)#Grafica K means
 Agrupación de paises en listas de 5
 
 
-# SEGUNDA PARTE. CARGAR SERIES DE LOS PAISES SELLECCIONADOS Y ANALIZARLAS
+# PARTE 3. ÍNDICES BRUSATILES DE LOS PAISES SELLECCIONADOS Y CREACIÓN DE PORTAFOLIOS
 ## Cargar librerias necesarias
 
 ```{r, include=FALSE}
@@ -734,7 +724,9 @@ fronteraNorm %>%
 
 
 
-
+# PARTE 4. ¿SON LOS PORTAFOLIOS UN GRUPO DE INVERSIÓN?
+A travez de formación de portafolios probar si un grupo de activos son un grupo de inversión o no.
+# PARTE 5. MODELOS DE REGRESIÓN PARA EXPLICAR LAS RAZONES DE SHARP DE LOS GRUPOS
 
 
 

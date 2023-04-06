@@ -1,2 +1,0 @@
-"0","km <- kmeans(Kdf1_Descent, centers = 4, iter.max = 20, nstart = 20)"
-"0","fviz_cluster(km, data = Kdf1_Descent)#Grafica K means"

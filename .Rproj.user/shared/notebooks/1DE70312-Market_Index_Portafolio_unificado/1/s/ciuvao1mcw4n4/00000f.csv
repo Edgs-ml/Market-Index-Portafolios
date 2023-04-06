@@ -1,2 +1,0 @@
-"0","Kdf1_Descent = subset(df1_PC123_Descent, select = c(""PC1"",""PC2"", ""PC3""))"
-"0","head(Kdf1_Descent, 5)"

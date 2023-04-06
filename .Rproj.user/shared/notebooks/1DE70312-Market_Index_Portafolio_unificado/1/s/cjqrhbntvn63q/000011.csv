@@ -1,5 +1,0 @@
-"0","map <- fviz_pca_ind(pca_df1, "
-"0","                    repel = TRUE,"
-"0","                    title=NULL)"
-"0","  "
-"0","map"
