@@ -1,0 +1,27 @@
+"0","library(quantmod)"
+"0","library(PerformanceAnalytics)"
+"0","library(PortfolioAnalytics)"
+"2","Loading required package: foreach
+"
+"2","
+Attaching package: ‘foreach’
+
+"
+"2","The following objects are masked from ‘package:purrr’:
+
+    accumulate, when
+
+"
+"0","library(DEoptim)"
+"2","Loading required package: parallel
+"
+"2","
+DEoptim package
+Differential Evolution algorithm in R
+Authors: D. Ardia, K. Mullen, B. Peterson and J. Ulrich
+
+"
+"0","library(readxl)"
+"0","library(fBasics)"
+"0","library(ghyp)"
+"0","library(PortfolioAnalytics)"

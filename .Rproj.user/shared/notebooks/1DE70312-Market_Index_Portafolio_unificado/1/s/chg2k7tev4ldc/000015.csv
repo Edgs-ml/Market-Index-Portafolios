@@ -1,5 +1,0 @@
-"0","Optimized_Port_Norm <- optimize.portfolio(retornosm,"
-"0","                                      Specs_Port_Norm,"
-"0","                                      trace = TRUE)"
-"2","Error in is.xts(x) : object 'retornosm' not found
-"

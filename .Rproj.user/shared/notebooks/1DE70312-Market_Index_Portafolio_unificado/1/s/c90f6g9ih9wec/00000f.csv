@@ -1,0 +1,7 @@
+"0","Contrib_var_fvis_df <- fviz_contrib(pca_df, choice = ""var"","
+"0","             title = ""Porcentaje de Varianza Contribuida con GDP y todas las Observaciones"","
+"0","             addlabels = TRUE)"
+"0",""
+"0","Contrib_var_fvis_df1 <- fviz_contrib(pca_df1, choice = ""var"","
+"0","             title = ""Percentage of Variance contribution Without Variable GDP"","
+"0","             addlabels = TRUE)"

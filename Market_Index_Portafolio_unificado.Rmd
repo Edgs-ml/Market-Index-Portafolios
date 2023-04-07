@@ -176,15 +176,9 @@ Todas las variables tienen una significante correlación entre si, excepto por e
 ### 2.2.2. Creación de los vectores de PCA de cada Data Frame
 ```{r, echo=FALSE}
 pca_df <- prcomp(df)
-summary(pca_df)
-```
-```{r, echo=FALSE}
 pca_df1 <- prcomp(df1)
+summary(pca_df)
 summary(pca_df1)
-```
-```{r, echo=FALSE}
-pca_df2 <- prcomp(df2)
-summary(pca_df2)
 ```
 
 Importancia del componente principal
@@ -200,15 +194,9 @@ df1_PC123 <- cbind(df1, pca_df1$x)
 df1_PC123_Descent <- df1_PC123 %>%
   arrange(desc(PC1))
 
-df2_PC1234 <- cbind(df2, pca_df2$x)
-df2_PC1234_Descent <- df2_PC1234 %>%
-  arrange(desc(PC1))
-
 kable(head(df_PC1234_Descent, 5), 
       format = "latex")
 kable(head(df1_PC123_Descent, 5),
-      format = "latex")
-kable(head(df2_PC1234_Descent, 5),
       format = "latex")
 ```
 
@@ -222,20 +210,13 @@ fviz_pca_ind(pca_df,
 fviz_pca_ind(pca_df1,
              repel = TRUE,
              title = "Place of each country in a PC1 and PC2 Map [Without GDP]")
-
-fviz_pca_ind(pca_df2,
-             repel = TRUE,
-             title = "Place of each country [With GDP and without USA & China]")
 ```
 ### 3.2. Gráfica de individuos y variables.
 ```{r}
 Biplot_fvis_df <- fviz_pca_biplot(pca_df)
 
 Biplot_fvis_df1 <- fviz_pca_biplot(pca_df1)
-
-Biplot_fvis_df2 <- fviz_pca_biplot(pca_df2)
 ```
-
 ### 3.3. Contribución de varianza de variables y de Componentes Principales
 ```{r}
 Contrib_var_fvis_df <- fviz_contrib(pca_df, choice = "var",
@@ -245,12 +226,7 @@ Contrib_var_fvis_df <- fviz_contrib(pca_df, choice = "var",
 Contrib_var_fvis_df1 <- fviz_contrib(pca_df1, choice = "var",
              title = "Percentage of Variance contribution Without Variable GDP",
              addlabels = TRUE)
-
-Contrib_var_fvis_df2 <- fviz_contrib(pca_df2, choice = "var",
-             title = "With Variable GDP and without USA & China",
-             addlabels = TRUE)
 ```
-
 ### 3.4. Porcentaje de varianza explicada por cada Componente Principal
 ```{r}
 Porcen_var_fvis_df <- fviz_screeplot(pca_df,
@@ -260,13 +236,7 @@ Porcen_var_fvis_df <- fviz_screeplot(pca_df,
 Porcen_var_fvis_df1 <- fviz_screeplot(pca_df1,
                title = "3 Principal Components Without GDP",
                addlabels = TRUE) # Porcentaje de la varianza explicada con el PCA1
-
-Porcen_var_fvis_df2 <- fviz_screeplot(pca_df2,
-               title = "4 Principal Components Without USA & China",
-               addlabels = TRUE)
 ```
-
-
 ## 3.5.1 
 ```{r}
 #PCA DF
@@ -282,11 +252,6 @@ ggarrange(Contrib_var_fvis_df, Porcen_var_fvis_df, Biplot_fvis_df,
 ggarrange(Contrib_var_fvis_df1, Porcen_var_fvis_df1, Biplot_fvis_df1,
           ncol = 2,
           nrow = 2)
-
-#PCA DF2
-ggarrange(Contrib_var_fvis_df2, Porcen_var_fvis_df2, Biplot_fvis_df2,
-          ncol = 2,
-          nrow = 2)
 ```
 
 ### 3.6. Matriz de correlaciones con los Componentes Principales
@@ -294,8 +259,6 @@ ggarrange(Contrib_var_fvis_df2, Porcen_var_fvis_df2, Biplot_fvis_df2,
 cor.plot(df_PC1234)
 
 cor.plot(df1_PC123)
-
-cor.plot(df2_PC1234)
 ```
 
 A partir de los resultados del PCA concluimos que debemos de excluir la variable GDP y mantener a Estados Unido y China. Ahora se hará un agrupamiento de la Data Frame 1 para encontrar los grupos de paises.
@@ -303,14 +266,13 @@ A partir de los resultados del PCA concluimos que debemos de excluir la variable
 ## 4. K-MEANS
 Crear grupos de 5 paises con base en los 3 Componentes Principales de la Data Frame 1
 
-```{r}
+```{r echo=FALSE}
 map <- fviz_pca_ind(pca_df1, 
                     repel = TRUE,
                     title=NULL)
   
 map
-```
-```{r}
+
 names_map <- as.data.frame(map[["data"]][["name"]])
 y_map <- as.data.frame(map[["data"]][["y"]])
 x_map <- as.data.frame(map[["data"]][["x"]])
@@ -322,28 +284,9 @@ coordinates_map <- coordinates_map[,-1]
 coordinates_map %>%
   ggplot(aes(x=x, y=y))+
   geom_point()+
-  geom_text(aes(label=Country))
-k_map <- kmeans(coordinates_map, 7)
-fviz_cluster(k_map, data = coordinates_map)
-```
+  geom_text(aes(label=names_map$`map[["data"]][["name"]]`))
 
------
-
-### 4.1. Crear una nueva Data Frame con solo los valores de PC del df1
-```{r}
-Kdf1_Descent = subset(df1_PC123_Descent, select = c("PC1","PC2", "PC3"))
-head(Kdf1_Descent, 5)
-```
-
-### 4.2. Dimencionado de datos y seed para kmeans
-```{r}
-df1_scaled <- scale(df1_PC123_Descent)
-set.seed(123)
-```
-
-Elbow Method
-```{r}
-fviz_nbclust(df1_scaled,
+fviz_nbclust(coordinates_map,
              kmeans,
              method = "wss",
              k.max = 24)
@@ -352,36 +295,25 @@ fviz_nbclust(df1_scaled,
              kmeans,
              method = "gap_stat",
              k.max = 30)
+
+
+k_map <- kmeans(coordinates_map, 7)
+fviz_cluster(k_map, 
+             data = coordinates_map)
 ```
 
-Gap Method
+-----
+4.1. Crear una nueva Data Frame con solo los valores de PC del df1
 ```{r}
-#calculate gap statistic based on number of clusters
-gap_stat <- clusGap(df1_scaled,
-                    FUN = kmeans,
-                    nstart = 25,
-                    K.max = 30,
-                    B = 50)
-
-#plot number of clusters vs. gap statistic
-fviz_gap_stat(gap_stat)
+# Opcional
+Kdf1_Descent = subset(df1_PC123_Descent, select = c("PC1","PC2", "PC3"))
+head(Kdf1_Descent, 5)
 ```
+-------
 
-Agrupacion por clusters
-```{r}
-km <- kmeans(Kdf1_Descent, 
-             centers = 4, 
-             iter.max = 20, 
-             nstart = 20)
-fviz_cluster(km, data = Kdf1_Descent)#Grafica K means
-```
-
-
-Agrupación de paises en listas de 5
 
 
 # PARTE 3. ÍNDICES BRUSATILES DE LOS PAISES SELLECCIONADOS Y CREACIÓN DE PORTAFOLIOS
-## Cargar librerias necesarias
 
 ```{r, include=FALSE}
 library(cluster)
@@ -400,6 +332,7 @@ library(quantmod) #Para descargar datos
 library(cramer) #Para la prueba de cramer 
 ```
 
+## 3.1 Primer grupo
 ```{r include=FALSE}
 Serie_de_datos_el_bueno_ <- read_excel("~/Documents/GitHub/Market-Index-Portafolios/iNDICES.xlsx", 
     col_types = c("date", "numeric", "numeric", 
@@ -411,9 +344,6 @@ g1<-textshape::column_to_rownames(g1,loc=1)
 
 ```{r}
 g1 <- drop_na(g1)
-glimpse(g1)
-```
-```{r}
 retornos <- Return.calculate(g1,
                            method = "log")[-1,]
 ```
@@ -422,8 +352,8 @@ Estadisticas descriptivas
 Estg1 <- basicStats(retornos)
 Estg1
 ```
-## 2.2 Pruebas Estadisticas de los Retornos
-### 2.2.1 Prueba de 
+## 3.2 Pruebas Estadisticas de los Retornos
+### 3.2.1 Prueba de 
 ```{r}
 adf_sti <- adf.test(retornos$SP)
 
@@ -512,9 +442,10 @@ plot(density(retornos$SP),
         sub="SP index")
    
 #Pruba de Kormogorov univariada para NIG
- ks.test(retornos$SP,r)
+ks.test(retornos$SP,r)
 ```
 
+--------
 ```{r}
 #Parametros para NIG Multivariada
 multNIG <- fit.NIGmv(data=retornos,
@@ -549,10 +480,12 @@ plot(density(Mnig),col="black",
   lines(density(retornos$KOSPI),col="purple")+
   lines(density(retornos$DAX),col="brown")
 ```
+----------
 
-####### Comparación de portafolio 1 normal vs nig 1
-## Optimización de portafolio 1
-# Optimizar portafolio 1 con NIG y con Nomral y comparar las curvas de Markowits para ver cual es mejor y comparar sus Sharps
+# PARTE 4. COMPARACIÓN DE PORTAFOLIOS NORMALES CONTRA NIG
+
+## 4.1 Optimización de portafolio 1
+*Optimizar portafolio 1 con NIG y con Nomral y comparar las curvas de Markowits para ver cual es mejor y comparar sus Sharps*
 
 ```{r include = FALSE}
 library(quantmod)
@@ -564,7 +497,7 @@ library(fBasics)
 library(ghyp)
 library(PortfolioAnalytics)
 ```
-```{r}
+```{r echo=FALSE include = FALSE}
 Specs_Port_Norm <- portfolio.spec(retornos)
 
 ##### Add Constraints #####
@@ -724,9 +657,9 @@ fronteraNorm %>%
 
 
 
-# PARTE 4. ¿SON LOS PORTAFOLIOS UN GRUPO DE INVERSIÓN?
+# PARTE 5. ¿SON LOS PORTAFOLIOS UN GRUPO DE INVERSIÓN?
 A travez de formación de portafolios probar si un grupo de activos son un grupo de inversión o no.
-# PARTE 5. MODELOS DE REGRESIÓN PARA EXPLICAR LAS RAZONES DE SHARP DE LOS GRUPOS
+# PARTE 6. MODELOS DE REGRESIÓN PARA EXPLICAR LAS RAZONES DE SHARP DE LOS GRUPOS
 
 
 
