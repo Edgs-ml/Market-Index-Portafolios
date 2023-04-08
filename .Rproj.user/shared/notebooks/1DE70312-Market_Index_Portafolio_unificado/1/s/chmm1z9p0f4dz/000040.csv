@@ -1,0 +1,7 @@
+"0",""
+"0","# Análisis previo del Kmeans"
+"0",""
+"0","fviz_nbclust(coordinates_map,"
+"0","             kmeans,"
+"0","             method = ""wss"","
+"0","             k.max = 24)"
