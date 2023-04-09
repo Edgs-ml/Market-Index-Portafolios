@@ -1,0 +1,5 @@
+"0",""
+"0","tabledf <- describe(df)"
+"0",""
+"0","kable(tabledf, format = ""latex"") %>%"
+"0","  kable_styling(latex_options = ""scale_down"", font_size = 5)"
