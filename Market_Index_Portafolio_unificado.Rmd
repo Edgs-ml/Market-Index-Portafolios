@@ -292,7 +292,7 @@ fviz_nbclust(df1_scaled,
 
 # CORREGIR !!! PONER ARGUMENTO DE SIZE=5 PARA TENER LOS PORTAFOLIOS DE 5 PAISES
 
-k_map <- kmeans(coordinates_map, 7)
+k_map <- kmeans(coordinates_map, 10)
 fviz_cluster(k_map, 
              data = coordinates_map)
 
@@ -304,10 +304,14 @@ k_map1 <- k_map_df %>%
   arrange(`k_map$cluster`)
 
 k_map1 <- k_map_df %>%
-  subset(`k_map$cluster`==6)
+  subset(`k_map$cluster`==8)
 
 head(k_map1)
 ```
+```{r}
+k_map1[[]]
+```
+
 
 -----
 Crear una nueva Data Frame con solo los valores de PC del df1

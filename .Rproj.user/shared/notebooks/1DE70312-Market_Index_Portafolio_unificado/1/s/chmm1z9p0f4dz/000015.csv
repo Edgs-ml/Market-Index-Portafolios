@@ -1,5 +1,0 @@
-"0","# CORREGIR !!! PONER ARGUMENTO DE SIZE=5 PARA TENER LOS PORTAFOLIOS DE 5 PAISES"
-"0",""
-"0","k_map <- kmeans(coordinates_map, 7)"
-"0","fviz_cluster(k_map, "
-"0","             data = coordinates_map)"
