@@ -1,0 +1,74 @@
+"0","Equity1 <- c(""^AXJO"", ""^ATX"",""^BFX"",""^GSPTSE"",""000001.SS"", ""^OMXT"", ""^OMXH25"", ""^FCHI"","
+"0","              ""^FCHI"", ""^GDAXI"", ""^ISEQ"", ""TA35.TA"", ""^N225"", ""FBMEMAS.FGI"", ""^AEX"", ""^IBEX"","
+"0","              ""^SSMI"", ""DUAE.L"")"
+"0","getSymbols(Equity1, from=as.Date(""2018-01-01""), to=Sys.Date())"
+"2","Warning: ^AXJO contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","Warning: ^ATX contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","Warning: ^BFX contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: ^OMXT download failed; trying again."
+"2","Warning: Unable to import “^OMXT”.
+^OMXT download failed after two attempts. Error message:
+HTTP error 404."
+"2","Warning: ^OMXH25 contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: ^FCHI contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: ^GDAXI contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: ^ISEQ contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: TA35.TA contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: ^N225 contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: FBMEMAS.FGI download failed; trying again."
+"2","Warning: Unable to import “FBMEMAS.FGI”.
+FBMEMAS.FGI download failed after two attempts. Error message:
+HTTP error 404."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: ^IBEX contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: ^SSMI contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
+"2","pausing 1 second between requests for more than 5 symbols
+"
+"2","Warning: DUAE.L download failed; trying again."
+"2","Warning: Unable to import “DUAE.L”.
+DUAE.L download failed after two attempts. Error message:
+HTTP error 404."
+"1"," [1]"
+"1"," ""^AXJO""    "
+"1"," ""^ATX""     "
+"1"," ""^BFX""     "
+"1"," ""^GSPTSE""  "
+"1"," ""000001.SS"""
+"1"," ""^OMXH25""  "
+"1"," ""^FCHI""    "
+"1"," ""^GDAXI""   "
+"1","
+"
+"1"," [9]"
+"1"," ""^ISEQ""    "
+"1"," ""TA35.TA""  "
+"1"," ""^N225""    "
+"1"," ""^AEX""     "
+"1"," ""^IBEX""    "
+"1"," ""^SSMI""    "
+"1","
+"
+"0","Equity1_ad <- NULL"
+"0","for(i in Equity1){"
+"0","  assign(paste0(""Ad_"",i), Ad(get(i)))"
+"0","  Equity1_ad <- c(Equity1_ad, paste0(""Ad_"",i))"
+"0","}"
+"2","Error in get(i) : object '^AXJO' not found
+"

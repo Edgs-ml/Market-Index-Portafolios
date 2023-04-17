@@ -411,13 +411,82 @@ Crear una nueva Data Frame con solo los valores de PC del df1
 Kdf1_Descent = subset(df1_PC123_Descent, select = c("PC1","PC2", "PC3"))
 head(Kdf1_Descent, 5)
 ```
--------
+
 
 
 # PARTE 3. ÍNDICES BRUSATILES DE LOS PAISES SELLECCIONADOS Y CREACIÓN DE PORTAFOLIOS
 ## 3.1 Primer Grupo
 ESTOS AHORITA NO, LUEGO CONSEGUIR BIEN LOS DATOS EN BLOOMBERG
 POR EL MOMENTO USAR 
+
+```{r}
+Equity1 <- c("^AXJO", "^ATX","^BFX","^GSPTSE","000001.SS", "^OMXT", "^OMXH25", "^FCHI",
+              "^FCHI", "^GDAXI", "^ISEQ", "TA35.TA", "^N225", "FBMEMAS.FGI", "^AEX", "^IBEX",
+              "^SSMI", "DUAE.L")
+getSymbols(Equity1, from=as.Date("2018-01-01"), to=Sys.Date())
+
+Equity1_ad <- NULL
+for(i in Equity1){
+  assign(paste0("Ad_",i), Ad(get(i)))
+  Equity1_ad <- c(Equity1_ad, paste0("Ad_",i))
+}
+
+Equity1_Portfolio <- merge.xts(get(Equity1_ad[1]),
+                              get(Equity1_ad[2]),
+                              join = "inner")
+
+for(i in 3:length(Equity1_ad)){
+  Equity1_Portfolio <- merge.xts(Equity1_Portfolio,
+                                get(Equity1_ad[i]),
+                                join = "inner")
+}
+Equity1_Returns <- Return.calculate(Equity1_Portfolio)[-1,]
+View(Equity1_Returns)
+#----
+Equity2 <- c("^OMXCXC20PI", "CES300.HK", "^KS11", "^NZ50", "OSEBX.OL", "WISGP.SI",
+             "^OMX", "^TSE50", "^FTSE", "^GSPC")
+getSymbols(Equity1, from=as.Date("2018-01-01"), to=Sys.Date())
+
+Equity2_ad <- NULL
+for(i in Equity2){
+  assign(paste0("Ad_",i), Ad(get(i)))
+  Equity2_ad <- c(Equity2_ad, paste0("Ad_",i))
+}
+
+Equity2_Portfolio <- merge.xts(get(Equity2_ad[1]),
+                              get(Equity2_ad[2]),
+                              join = "inner")
+
+for(i in 3:length(Equity2_ad)){
+  Equity2_Portfolio <- merge.xts(Equity2_Portfolio,
+                                get(Equity_ad[i]),
+                                join = "inner")
+}
+Equity2_Returns <- Return.calculate(Equity2_Portfolio)[-1,]
+View(Equity2_Returns)
+```
+
+```{r}
+Eq1_Specs_Port <- portfolio.spec(c())
+##### Add Constraints #####
+Eq1_Specs_Port <- add.constraint(Eq1_Specs_Port,
+                                type="full_investment")
+Eq1_Specs_Port <- add.constraint(Eq1_Specs_Port,
+                                type="long_only")
+
+##### Add Objective #####
+Eq1_Specs_Port <- add.objective(Eq1_Specs_Port,
+                               type="risk",
+                               name="StdDev")
+Eq1_Specs_Port <- add.objective(Eq1_Specs_Port,
+                               type='return',
+                               name='mean')
+Eq1_Specs_Port
+
+
+```
+
+
 ```{r include=FALSE}
 Serie_de_datos_el_bueno_ <- read_excel("~/Documents/GitHub/Market-Index-Portafolios/iNDICES.xlsx", 
     col_types = c("date", "numeric", "numeric", 
