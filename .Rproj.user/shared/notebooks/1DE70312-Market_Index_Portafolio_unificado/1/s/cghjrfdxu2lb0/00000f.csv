@@ -1,0 +1,6 @@
+"0","k_map2 <- kmeans(k_map_clusters3, 2)"
+"0","fviz_cluster(k_map2, "
+"0","             data = k_map_clusters3)"
+"2","Error in fviz_cluster(k_map2, data = k_map_clusters3) : 
+  could not find function ""fviz_cluster""
+"
