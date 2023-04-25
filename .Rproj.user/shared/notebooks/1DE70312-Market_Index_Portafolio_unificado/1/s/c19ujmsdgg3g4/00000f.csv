@@ -1,0 +1,6 @@
+"0","k_map_clusters4 <- cbind(coordinates_map,"
+"0","                         cluster = k_map_df$`k_map$cluster`) %>%"
+"0","  k_map_clusters2 %>%"
+"0","  subset(cluster==2)"
+"2","Error in k_map_clusters2(.) : could not find function ""k_map_clusters2""
+"
