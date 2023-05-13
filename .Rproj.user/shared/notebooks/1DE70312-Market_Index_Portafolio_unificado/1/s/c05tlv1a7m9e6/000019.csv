@@ -1,0 +1,4 @@
+"0","cor.plot(df, main = ""Correlación de GCI, ECI, EDBI, y GDP"")"
+"2","Warning: NaNs produced"
+"2","Warning: Number of subjects must be greater than 3 to find confidence intervals."
+"2","Warning: NaNs produced"

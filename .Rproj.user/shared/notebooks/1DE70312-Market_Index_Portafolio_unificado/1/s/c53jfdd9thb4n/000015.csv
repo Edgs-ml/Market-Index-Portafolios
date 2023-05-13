@@ -1,0 +1,3 @@
+"0","pca_df <- prcomp(df)"
+"2","Error in svd(x, nu = 0, nv = k) : infinite or missing values in 'x'
+"
