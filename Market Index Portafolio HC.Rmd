@@ -1,0 +1,117 @@
+---
+title: "Market Index Portafolio HC"
+author: "Edgar Sigfrido Soto Aparicio"
+date: "2023-05-19"
+output: html_document
+---
+
+# PARTE 1. INTRODUCCIÓN
+## 1.1 MOTIVACIÓN
+
+Con esta investigación queremos conocer si el metodo de reducción de dimensiones (PCA) de
+
+queremos basarnos en estos indicadores para encontrar grupos de paises competitivos y estables en los cuales invertir. Con esta investigación buscamos descubrir si la aplicación de tecnicas de *Machine Learning*, como la reducción de dimensiones del *Principal Component Analysis* es efectivo para encontrar dichos grupos.
+
+Verificar si el proceso de PCA 
+
+## 1.2 PLANTEAMIENTO DEL PROBLEMA Y CONTEXTO
+Nuestra investigación se basa en la modelación y la prueba de
+## 1.3 PREGUNTA DE INVESTIGACIÓN
+## 1.4 *SOLUTION OVERVIEW*
+
+# PARTE 2. DEFINICIÓN DE PORTAFOLIOS A TRAVÉS DE REDUCCIÓN DE DIMENSIONES DE LOS ÍNDICADORES CON PCA Y AGRUPACIÓN DE PAISES CON K-MEANS
+*Cargar las librerias*
+```{r, include=FALSE, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(textshape) #"Tools for Reshaping Text". Usado en columns_to_rownames
+library(broom)
+library(plotly)
+library(scales)
+library(caTools)
+library(caret)
+library(cluster)
+library(factoextra) #Para graficar K-Means y PCA
+library(psych) #Usado por su funsión de crar matices de correlaciones de colores
+library(stats) #Para hacer el PCA
+library(naniar) #Para limpiar las bases de datos
+library(fBasics) #Analisis estadistico
+library(PerformanceAnalytics)
+library(statmod)
+library(knitr)
+library(stargazer)
+library(kableExtra)
+library(ggpubr)
+library(ggdist)
+library(ggExtra)
+library(ggbeeswarm)
+library(aTSA) #Raiz Unitaria
+library(tseries) #Raiz Unitaria
+library(QuantPsyc) #Pruba multivariada
+library(ghyp) #Para hacer momentos estadisticos de la NIG
+library(quantmod) #Para descargar datos
+library(cramer) #Para la prueba de cramer 
+library(PortfolioAnalytics)
+library(DEoptim)
+library(tidyquant)
+```
+## 2.1 Descripción de los índices seleccionados
+```{r include=FALSE eval=FALSE warning=FALSE message=FALSE}
+df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
+
+#df: Data Frame with all variables and observations
+df <- column_to_rownames(df, loc = 1)
+#df1: Data frame without GDP and with all the countries
+df1 <- df[,-4]
+
+kable(head(df)) #Tabla de los primero paises en Latex
+kable(head(df1))
+
+tabledf <- describe(df)
+
+kable(tabledf, format = "latex") %>%
+  kable_styling(latex_options = "scale_down", font_size = 5)
+
+tabledf1 <- describe(df1)
+
+kable(tabledf1, format = "latex") %>%
+  kable_styling(latex_options = "scale_down", font_size = 5)
+
+kable(tabledf,
+      caption = "Descripción Estadistica de los índicadores")
+```
+### 2.1.1 Gráficas de GDP 
+```{r}
+bxp_gdp <- df_plot %>%
+  ggplot(aes(x=GDP, y=0))+
+  geom_boxplot()+
+  geom_quasirandom()+
+  geom_label(data=df_plot %>% 
+               filter(GDP>1.0e+13), aes(label=Country))
+
+#vio_gdp <- df_plot %>%
+#  ggplot(aes(x=GDP, y=GCI))+
+#  geom_violin()+
+#  geom_label(data=df_plot %>% 
+#               filter(GDP>1.0e+13), aes(label=Country))
+
+hist_gdp <- df_plot %>%
+  ggplot(aes(x=GDP))+
+  geom_histogram(bins=100)+
+  geom_label(data = df_plot %>%
+               filter(GDP>1.0e+13), aes(x=GDP,y=Country, 
+                                        label=Country))
+
+#stat_desc_gdp <- kable(describe(df_plot$GDP), )
+
+ggarrange(bxp_gdp, hist_gdp,
+          labels = c("Boxplot", "Histogram"),
+          ncol = 2,
+          nrow = 1)
+```
+
+
+
+
+
+
