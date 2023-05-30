@@ -1,0 +1,3 @@
+"0","k_mapUltimos <- kmeans(k_map_clusters3.1, 2)"
+"0","fviz_cluster(k_mapUltimos, "
+"0","             data = k_map_clusters3.1)"

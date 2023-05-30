@@ -1,3 +1,0 @@
-"0","k_map <- kmeans(coordinates_map, 4)"
-"0","fviz_cluster(k_map, "
-"0","             data = coordinates_map)"

@@ -1,4 +1,6 @@
-"0","k_map_clusters3 <- cbind(coordinates_map,"
-"0","                         cluster = k_map_df$`k_map$cluster`) %>%"
-"0","  subset(cluster==2)"
-"0","k_map_clusters3 <- k_map_clusters3[,-3]"
+"0","k_map_clusters3 <- cbind(coordinates_map,
+                         cluster = k_map_df$`k_map$cluster`)
+"
+"2","Error in data.frame(..., check.names = FALSE) : 
+  arguments imply differing number of rows: 122, 23
+"

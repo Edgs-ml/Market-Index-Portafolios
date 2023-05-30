@@ -1,0 +1,13 @@
+"0","fviz_nbclust(k_map_clusters3,
+             kmeans,
+             method = ""gap_stat"",
+             k.max = 24,
+             print.summary=TRUE)
+"
+"1","Clustering k = 1,2,..., K.max (= "
+"1",""
+"1","24"
+"1",""
+"1","): .. "
+"2","Error: number of cluster centres must lie between 1 and nrow(x)
+"
