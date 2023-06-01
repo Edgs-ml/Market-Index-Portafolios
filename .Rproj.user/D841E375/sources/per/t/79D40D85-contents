@@ -1,0 +1,290 @@
+---
+title: "Market Index Portafolio HC"
+author: "Edgar Sigfrido Soto Aparicio"
+date: "2023-05-19"
+output: html_document
+---
+
+# PARTE 1. INTRODUCCIÓN
+## 1.1 MOTIVACIÓN
+
+Con esta investigación queremos conocer si el metodo de reducción de dimensiones (PCA) de
+
+queremos basarnos en estos indicadores para encontrar grupos de paises competitivos y estables en los cuales invertir. Con esta investigación buscamos descubrir si la aplicación de tecnicas de *Machine Learning*, como la reducción de dimensiones del *Principal Component Analysis* es efectivo para encontrar dichos grupos.
+
+Verificar si el proceso de PCA 
+
+## 1.2 PLANTEAMIENTO DEL PROBLEMA Y CONTEXTO
+Nuestra investigación se basa en la modelación y la prueba de
+## 1.3 PREGUNTA DE INVESTIGACIÓN
+## 1.4 *SOLUTION OVERVIEW*
+
+# PARTE 2. DEFINICIÓN DE PORTAFOLIOS A TRAVÉS DE REDUCCIÓN DE DIMENSIONES DE LOS ÍNDICADORES CON PCA Y AGRUPACIÓN DE PAISES CON K-MEANS
+*Cargar las librerias*
+```{r, include=FALSE, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(textshape) #"Tools for Reshaping Text". Usado en columns_to_rownames
+library(broom)
+library(plotly)
+library(scales)
+library(caTools)
+library(caret)
+library(cluster)
+library(factoextra) #Para graficar K-Means y PCA
+library(psych) #Usado por su funsión de crar matices de correlaciones de colores
+library(stats) #Para hacer el PCA
+library(naniar) #Para limpiar las bases de datos
+library(fBasics) #Analisis estadistico
+library(PerformanceAnalytics)
+library(statmod)
+library(knitr)
+library(stargazer)
+library(kableExtra)
+library(ggpubr)
+library(ggdist)
+library(ggExtra)
+library(ggbeeswarm)
+library(aTSA) #Raiz Unitaria
+library(tseries) #Raiz Unitaria
+library(QuantPsyc) #Pruba multivariada
+library(ghyp) #Para hacer momentos estadisticos de la NIG
+library(quantmod) #Para descargar datos
+library(cramer) #Para la prueba de cramer 
+library(PortfolioAnalytics)
+library(DEoptim)
+library(tidyquant)
+```
+## 2.1 Descripción de los índices seleccionados
+```{r include=FALSE eval=FALSE warning=FALSE message=FALSE}
+df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
+
+#df: Data Frame with all variables and observations
+df <- column_to_rownames(df, loc = 1)
+df <- df[,-5]
+#df1: Data frame without GDP and with all the countries
+df1 <- df[,-4]
+
+kable(head(df)) #Tabla de los primero paises en Latex
+kable(head(df1))
+
+tabledf <- describe(df)
+
+kable(tabledf, format = "latex") %>%
+  kable_styling(latex_options = "scale_down", font_size = 5)
+
+tabledf1 <- describe(df1)
+
+kable(tabledf1, format = "latex") %>%
+  kable_styling(latex_options = "scale_down", font_size = 5)
+
+kable(tabledf,
+      caption = "Descripción Estadistica de los índicadores")
+```
+### 2.1.1 Gráficas de GDP 
+```{r}
+bxp_gdp <- df_plot %>%
+  ggplot(aes(x=GDP, y=0))+
+  geom_boxplot()+
+  geom_quasirandom()+
+  geom_label(data=df_plot %>% 
+               filter(GDP>1.0e+13), aes(label=Country))
+
+#vio_gdp <- df_plot %>%
+#  ggplot(aes(x=GDP, y=GCI))+
+#  geom_violin()+
+#  geom_label(data=df_plot %>% 
+#               filter(GDP>1.0e+13), aes(label=Country))
+
+hist_gdp <- df_plot %>%
+  ggplot(aes(x=GDP))+
+  geom_histogram(bins=100)+
+  geom_label(data = df_plot %>%
+               filter(GDP>1.0e+13), aes(x=GDP,y=Country, 
+                                        label=Country))
+
+#stat_desc_gdp <- kable(describe(df_plot$GDP), )
+
+ggarrange(bxp_gdp, hist_gdp,
+          labels = c("Boxplot", "Histogram"),
+          ncol = 2,
+          nrow = 1)
+```
+### 2.1.2 Gráficas de ECI
+```{r}
+bxp_eci <- df_plot %>%
+  ggplot(aes(x=ECI, y=0))+
+  geom_boxplot()+
+  geom_quasirandom()
+
+vio_eci <- df_plot %>%
+  ggplot(aes(x=ECI, y=0))+
+  geom_violin()
+
+ggarrange(bxp_eci, vio_eci, 
+          labels = c("A", "B"),
+          ncol = 2,
+          nrow = 1)
+```
+### 2.1.4 Gráficas de GCI
+```{r echo=FALSE}
+bxp_gci <- df_plot %>%
+  ggplot(aes(x=GCI, y=0))+
+  geom_boxplot()+
+  geom_quasirandom()
+vio_gci <- df_plot %>%
+  ggplot(aes(x=GCI, y=0))+
+  geom_violin()
+
+ggarrange(bxp_gci, vio_gci, 
+          labels = c("A", "B"),
+          ncol = 2,
+          nrow = 1)
+```
+### 2.1.5 Box plot de los índices seleccionados
+```{r echo=FALSE}
+ggarrange(bxp_eci, bxp_gci, bxp_edbi, bxp_gdp,
+          labels = c("ECI Boxplot", "GCI Boxplot", "EDBI Boxplot", "GDP Boxplot"),
+          ncol = 2,
+          nrow = 2)
+```
+
+## 2.2 PCA
+### 2.2.1 Matriz de correlaciones
+```{r, echo=FALSE}
+cor.plot(df, main = "Correlación de GCI, ECI, EDBI, y GDP")
+cor.plot(df1, main = "Correlación de GCI, ECI, y EDBI")
+```
+Todas las variables tienen una significante correlación entre si, excepto por el GDP. La correlación entre GDP y las otras variables aumenta cuando eliminamos a los outliers
+
+### 2.2.2 Creación de los vectores de PCA de cada Data Frame
+
+```{r, echo=FALSE}
+pca_df <- prcomp(df)
+pca_df1 <- prcomp(df1)
+summary(pca_df)
+summary(pca_df1)
+df_PC1234 <- cbind(df, pca_df$x)
+df_PC1234_Descent <- df_PC1234 %>%
+  arrange(desc(PC1))
+#Crear una nueva data frame con los 3 Componentes principales como variables y ordenarlos de forma descendiente por el PC1
+df1_PC123 <- cbind(df1, pca_df1$x)
+df1_PC123_Descent <- df1_PC123 %>%
+  arrange(desc(PC1))
+
+kable(head(df_PC1234_Descent, 5), 
+      format = "latex")
+kable(head(df1_PC123_Descent, 5),
+      format = "latex")
+```
+### 2.2.3 Graficas de PCA
+#### 2.2.3.1 Mapa Cartesiano con PC1 y PC2 como ejes para visualizar la posición de los paises.
+```{r, eval=FALSE, warning=FALSE}
+fviz_pca_ind(pca_df,
+             repel = FALSE,
+             title = "Lugar de Países dentro de los Componentes Principales 1 y 2 [con GDP]")
+
+fviz_pca_ind(pca_df1,
+             repel = TRUE,
+             title = "Place of each country in a PC1 and PC2 Map [Without GDP]")
+```
+#### 2.2.3.2 Comparación de las gráficas de DF y DF1  
+```{r}
+#Gráfica de individuos y variables.
+Biplot_fvis_df <- fviz_pca_biplot(pca_df)
+Biplot_fvis_df1 <- fviz_pca_biplot(pca_df1)
+#Contribución de varianza de variables y de Componentes Principales
+Contrib_var_fvis_df <- fviz_contrib(pca_df, choice = "var",
+             title = "Porcentaje de Varianza Contribuida con GDP y todas las Observaciones",
+             addlabels = TRUE)
+Contrib_var_fvis_df1 <- fviz_contrib(pca_df1, choice = "var",
+             title = "Percentage of Variance contribution Without Variable GDP",
+             addlabels = TRUE)
+# Porcentaje de varianza explicada por cada Componente Principal
+Porcen_var_fvis_df <- fviz_screeplot(pca_df,
+               title = "4 Principal Components With USA & China",
+               addlabels = TRUE)
+Porcen_var_fvis_df1 <- fviz_screeplot(pca_df1,
+               title = "3 Principal Components Without GDP",
+               addlabels = TRUE) # Porcentaje de la varianza explicada con el PCA1
+
+#PCA DF
+ggarrange(Contrib_var_fvis_df, Porcen_var_fvis_df, Biplot_fvis_df,
+          ncol = 2,
+          nrow = 2)
+
+#,labels = c("Porcentaje de Varianza Contribuida con GDP y todas las Observaciones",
+#                     "4 Componentes Principales con Estados Unidos y China", 
+#                     "Valor de Explicación del Componente Principal como Vector")
+
+#PCA DF1
+ggarrange(Contrib_var_fvis_df1, Porcen_var_fvis_df1, Biplot_fvis_df1,
+          ncol = 2,
+          nrow = 2)
+```
+#### 2.2.3.3 Matriz de correlaciones con los Componentes Principales
+```{r}
+cor.plot(df_PC1234)
+
+cor.plot(df1_PC123)
+```
+A partir de los resultados del PCA concluimos que debemos de excluir la variable GDP y mantener a Estados Unido y China. Ahora se hará un agrupamiento de la Data Frame 1 para encontrar los grupos de paises.
+
+## 2.3 HIRARCHICAL CLUSTERING
+Crear grupos de 5 paises con base en los Componentes Principales de la Data Frame 1
+```{r echo=FALSE include=FALSE}
+# A partir del mapa hecho del PC1 y PC2 creamos un objeto para facilitar la extracción de
+# sus valores
+map <- fviz_pca_ind(pca_df1, 
+                    repel = TRUE,
+                    title=NULL)
+#map Es opcional ver el resultado
+
+# Creamos un Data Frame para luego poder usar sus valores para el Kmeans
+names_map <- as.data.frame(map[["data"]][["name"]])
+y_map <- as.data.frame(map[["data"]][["y"]])
+x_map <- as.data.frame(map[["data"]][["x"]])
+coordinates_map <- cbind(names_map, x_map, y_map)
+colnames(coordinates_map) <- c("Country", "x","y")
+row.names(coordinates_map) <- coordinates_map$Country
+coordinates_map <- coordinates_map[,-1]
+
+coordinates_map %>%
+  ggplot(aes(x=x, y=y))+
+  geom_point()+
+  geom_text(aes(label=names_map$`map[["data"]][["name"]]`))
+```
+
+```{r}
+dims3_df1 <- pca_df1[["x"]]
+dims3_df1 <- as.data.frame(dims3_df1)
+pc1_df1 <- dims3_df1[,-c(2:3)]
+pc1_df1 <- as.data.frame(pc1_df1)
+pc1_df1 <- cbind(names_map, pc1_df1)
+pc1_df1 <- column_to_rownames(pc1_df1, loc=1)
+```
+
+```{r}
+hc_m <- c("average", "single", "complete", "ward")
+names(hc_m) <- c("average", "single", "complete", "ward")
+ac <- function(x){
+  agnes(pc1_df1,
+        method = x
+        )$ac
+}
+sapply(hc_m, ac)
+```
+
+```{r}
+hclust.out <- hclust(dist(pc1_df1))
+summary(hclust.out)
+agn_pc1 <- agnes(pc1_df1, method = "ward")
+pltree(agn_pc1)
+cutree(hclust.out, h=2)
+```
+
+
+
+
+
+
