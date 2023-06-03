@@ -32,6 +32,7 @@ library(DEoptim)
 library(tidyquant)
 library(NbClust)
 
+# Creación de las Data Frames
 df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
 df <- df[,-6]
 df_plot <- df #Data Frame para hacer gráficas descriptivas
@@ -42,9 +43,7 @@ colnames(df_gdplog_plot)[5] = "GDP"
 
 df_gdplog <- column_to_rownames(df_gdplog_plot, loc = 1)
 
-
-
-
+# Graficas descriptivas de las variables
 df_gdplog_plot %>%
   ggplot(aes(x=GDP))+
   geom_histogram(bins=100)+
@@ -60,7 +59,6 @@ summary(pca_df_gdplog)
 
 biplot(pca_df_gdplog)
 
-fviz_pca_ind(pca_df_gdplog)
 fviz_pca_biplot(pca_df_gdplog)
 fviz_contrib(pca_df_gdplog, 
              choice = "var")
@@ -70,8 +68,25 @@ fviz_screeplot(pca_df_gdplog)
 
 df_gdplog_PC1234 <- cbind(df_gdplog, pca_df_gdplog$x) %>% 
   arrange(desc(PC1))
+View(df_gdplog_PC1234)
 
-# Kmean
+df_PC12 <- as.data.frame(pca_df_gdplog$x)
+df_PC12 <- df_PC12[,1:2]
+View(df_PC12)
+
+# Kmeans sobre el PCA
+NB_df_PC12 <- NbClust(df_PC12,
+                        distance = "euclidean",
+                        method = "kmeans")
+
+kmean1_df_PC12 <- kmeans(df_PC12, 
+                           centers = 3,
+                           iter.max = 50) #creamos objeto de kmeans con la df principal
+
+fviz_cluster(kmean1_df_PC12, 
+             data = df_PC12)
+
+# Kmean sin PCA
 NB_df_gdplog <- NbClust(df_gdplog,
                         distance = "euclidean",
                         method = "kmeans")
