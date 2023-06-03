@@ -61,16 +61,19 @@ library(cramer) #Para la prueba de cramer
 library(PortfolioAnalytics)
 library(DEoptim)
 library(tidyquant)
+library(NbClust)
 ```
 
 ## 2.1 Descripción de los índices seleccionados
 ```{r include=FALSE eval=FALSE warning=FALSE message=FALSE}
 df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
 
-df <- column_to_rownames(df, loc = 1)
-df <- df[,-5]
-df1 <- df[,-4]
+df_plot <- df[,-6] #Data Frame para hacer gráficas descriptivas
 
+df <- column_to_rownames(df, loc = 1)
+df <- df[,-5] #Data Frame con GDP
+df1 <- df[,-4] #Data Frame sin GDP
+  
 View(df)
 View(df1)
 ```

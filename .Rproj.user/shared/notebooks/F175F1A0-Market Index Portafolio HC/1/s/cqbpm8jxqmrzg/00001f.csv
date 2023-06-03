@@ -1,6 +1,0 @@
-"0",""
-"0","tabledf1 <- describe(df1)"
-"2","Warning: no non-missing arguments to min; returning Inf"
-"2","Warning: no non-missing arguments to max; returning -Inf"
-"0","kable(tabledf1, format = ""latex"") %>%"
-"0","  kable_styling(latex_options = ""scale_down"", font_size = 5)"

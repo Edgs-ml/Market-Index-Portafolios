@@ -1,0 +1,17 @@
+"0","bxp_gdp <- df_plot %>%"
+"0","  ggplot(aes(x=GDP, y=0))+"
+"0","  geom_boxplot()+"
+"0","  geom_quasirandom()+"
+"0","  geom_label(data=df_plot %>% "
+"0","               filter(GDP>1.0e+13), aes(label=Country))"
+"1","[1m[33mError[39m in `filter()`:[22m
+[38;5;255m[33m![38;5;255m Problem while computing `..1 = GDP > 1e+13`.[39m
+[1mCaused by error in `mask$eval_all_filter()`:[22m
+[33m![39m object 'GDP' not found
+Backtrace:
+[90m  1. [39mggplot2::geom_label(data = df_plot %>% filter(GDP > 1e+13), aes(label = Country))
+[90m  6. [39m[1m[94mdplyr:::filter.data.frame([39m[22m., GDP > 1e+13[1m[94m)[39m[22m
+[90m  7. [39mdplyr:::filter_rows(.data, ..., caller_env = caller_env())
+[90m  8. [39mdplyr:::filter_eval(dots, mask = mask, error_call = error_call)
+[90m 10. [39mmask$eval_all_filter(dots, env_filter)
+"
