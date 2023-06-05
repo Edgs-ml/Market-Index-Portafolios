@@ -31,6 +31,7 @@ library(PortfolioAnalytics)
 library(DEoptim)
 library(tidyquant)
 library(NbClust)
+library(dendextend)
 
 # Creación de las Data Frames
 df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
@@ -75,9 +76,9 @@ df_PC12 <- df_PC12[,1:2]
 View(df_PC12)
 
 # Kmeans sobre el PCA
-NB_df_PC12 <- NbClust(df_PC12,
-                        distance = "euclidean",
-                        method = "kmeans")
+NbClust(df_PC12,
+        distance = "euclidean",
+        method = "kmeans")
 
 kmean1_df_PC12 <- kmeans(df_PC12, 
                            centers = 3,
@@ -85,6 +86,25 @@ kmean1_df_PC12 <- kmeans(df_PC12,
 
 fviz_cluster(kmean1_df_PC12, 
              data = df_PC12)
+
+## Segundo kmeans sobre PC12
+df_K1C1 <- cbind(df_PC12, 
+                 as.data.frame(kmean1_df_PC12$cluster))
+colnames(df_K1C1)[3] = "K1C1"
+df_K1C1 <- df_K1C1 %>%
+  filter(K1C1==3)
+df_K1C1 <- df_K1C1[,-3]
+#----
+NbClust(df_K1C1,
+        distance = "euclidean",
+        method = "kmeans")
+
+kmean2_df_PC12 <- kmeans(df_K1C1, 
+                         centers = 5,
+                         iter.max = 50)
+
+fviz_cluster(kmean2_df_PC12, 
+             data = df_K1C1)
 
 # Kmean sin PCA
 NB_df_gdplog <- NbClust(df_gdplog,
@@ -125,16 +145,43 @@ df_gdplog_k1C1 <- kmean1_df_gdplogdf %>%
 df_gdplog_k1C1 <- df_gdplog_k1C1[,-5]
 
 
+# Hirarchical Clustering sobre el PC12
 
-
-# Hirarchical Clustering
-
-hclust.out <- hclust(dist(pca_df_gdplog))
+hclust.out <- hclust(dist(df_PC12))
 summary(hclust.out)
-agn_pc1 <- agnes(pc1_df1, method = "ward")
-pltree(agn_pc1)
-cutree(hclust.out, h=2)
 
+hc.out.dend <- as.dendrogram(hclust.out)
+
+fviz_dend(hclust.out,
+          repel = TRUE,
+          rect = TRUE,
+          color_labels_by_k = TRUE)
+
+plot(hc.out.dend)+
+  abline(h=1.4, col = "red")
+
+branch.height <- get_branches_heights(hc.out.dend,
+                                      sort = FALSE,
+                                      decreasing = FALSE,
+                                      include_leaves = FALSE)
+branch.height <- as.data.frame(branch.height)
+
+clusters <- cutree(hc.out, h = 1.4)
+ch <- as.data.frame(clusters)
+
+ch16 <- ch %>%
+  filter(clusters == 16)
+View(ch16)
+
+
+#chatgpt
+clusters <- cutree(hc.out.dend, h = 1.5)
+
+# Determine the number of clusters
+num_clusters <- length(unique(clusters))
+
+# Print the number of clusters
+print(num_clusters)
 
 
 
