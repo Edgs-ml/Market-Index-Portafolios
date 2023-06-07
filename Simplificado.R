@@ -94,17 +94,50 @@ colnames(df_K1C1)[3] = "K1C1"
 df_K1C1 <- df_K1C1 %>%
   filter(K1C1==3)
 df_K1C1 <- df_K1C1[,-3]
+View(df_K1C1)
 #----
 NbClust(df_K1C1,
         distance = "euclidean",
         method = "kmeans")
 
 kmean2_df_PC12 <- kmeans(df_K1C1, 
-                         centers = 5,
+                         centers = 2,
                          iter.max = 50)
 
 fviz_cluster(kmean2_df_PC12, 
              data = df_K1C1)
+
+## Tercer kmeans sobre PC12
+df_k2C2 <- cbind(df_K1C1,
+                 as.data.frame(kmean2_df_PC12$cluster))
+colnames(df_k2C2)[3] = "K2C2"
+df_k2C2 <- df_k2C2 %>%
+  filter(K2C2==2)
+df_k2C2 <- df_k2C2[,-3]
+View(df_k2C2)
+#----
+kmean3_df_PC12 <- kmeans(df_k2C2, 
+                         centers = 2,
+                         iter.max = 50)
+
+fviz_cluster(kmean3_df_PC12, 
+             data = df_k2C2)
+
+df_k3C2 <- cbind(df_k2C2,
+                 as.data.frame(kmean3_df_PC12$cluster))
+colnames(df_k3C2)[3] = "K3C2"
+df_k3C2 <- df_k3C2 %>%
+  filter(K3C2==2)
+df_k3C2 <- df_k3C2[,-3]
+View(df_k3C2)
+
+df_k3C1 <- cbind(df_k2C2,
+                 as.data.frame(kmean3_df_PC12$cluster))
+colnames(df_k3C1)[3] = "K3C1"
+df_k3C1 <- df_k3C1 %>%
+  filter(K3C1==1)
+df_k3C1 <- df_k3C1[,-3]
+View(df_k3C1)
 
 # Kmean sin PCA
 NB_df_gdplog <- NbClust(df_gdplog,
