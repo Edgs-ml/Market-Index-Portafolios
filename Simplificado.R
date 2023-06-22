@@ -176,3 +176,17 @@ colnames(df_PC1234_HC_KM)[10] <- "KM_1"
 #  filter()
 #View(ch16)
 
+
+
+# Indices
+indices <- read_excel("Indices_km.xlsx", 
+                      sheet = "Hoja1")
+View(indices)
+names(indices)[names(indices) == '...1'] <- 'Date'
+indices <- indices[-1,]
+vis_miss(indices)
+
+
+
+
+
