@@ -1,6 +1,15 @@
 "0","Equity1 <- c(""^AXJO"", ""^ATX"",""^BFX"",""^GSPTSE"",""000001.SS"", ""^OMXT"", ""^OMXH25"", ""^FCHI"","
+"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
+  invalid first argument
+"
 "0","              ""^FCHI"", ""^GDAXI"", ""^ISEQ"", ""TA35.TA"", ""^N225"", ""FBMEMAS.FGI"", ""^AEX"", ""^IBEX"","
+"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
+  invalid first argument
+"
 "0","              ""^SSMI"", ""DUAE.L"")"
+"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
+  invalid first argument
+"
 "0","getSymbols(Equity1, from=as.Date(""2018-01-01""), to=Sys.Date())"
 "2","Warning: ^AXJO contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
 "2","Warning: ^ATX contains missing values. Some functions will not work if objects contain missing values in the middle of the series. Consider using na.omit(), na.approx(), na.fill(), etc to remove or replace them."
@@ -51,24 +60,42 @@ HTTP error 404."
 "1"," ""^BFX""     "
 "1"," ""^GSPTSE""  "
 "1"," ""000001.SS"""
+"1","
+"
+"1"," [6]"
 "1"," ""^OMXH25""  "
 "1"," ""^FCHI""    "
 "1"," ""^GDAXI""   "
-"1","
-"
-"1"," [9]"
 "1"," ""^ISEQ""    "
 "1"," ""TA35.TA""  "
+"1","
+"
+"1","[11]"
 "1"," ""^N225""    "
 "1"," ""^AEX""     "
 "1"," ""^IBEX""    "
 "1"," ""^SSMI""    "
 "1","
 "
+"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
+  invalid first argument
+"
 "0","Equity1_ad <- NULL"
+"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
+  invalid first argument
+"
 "0","for(i in Equity1){"
+"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
+  invalid first argument
+"
 "0","  assign(paste0(""Ad_"",i), Ad(get(i)))"
+"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
+  invalid first argument
+"
 "0","  Equity1_ad <- c(Equity1_ad, paste0(""Ad_"",i))"
+"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
+  invalid first argument
+"
 "0","}"
 "2","Error in get(i) : object '^AXJO' not found
 "

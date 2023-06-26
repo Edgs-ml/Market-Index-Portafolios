@@ -32,6 +32,8 @@ library(DEoptim)
 library(tidyquant)
 library(NbClust)
 library(dendextend)
+library(xts)
+library(zoo)
 
 # Creación de las Data Frames
 df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
@@ -188,16 +190,128 @@ indices <- read_excel("Indices_km.xlsx",
                                     "numeric", "numeric", "numeric", "numeric"))
 names(indices)[names(indices) == '...1'] <- 'Date'
 indices <- indices[-1,]
-View(indices)
 indices <- na.omit(indices)
-
 indices <- column_to_rownames(indices, loc = 1)
-
 indices <- round(indices, digits = 2)
+indices <- as.xts(indices)
+new_names <- c("United States", "Australia", "India", "Italy", "Mexico", 
+               "Russian Federation", "Saudi Arabia", "Spain", "Canada", "China",
+               "France", "Germany","Japan", "Korea, Rep", "Netherlands", 
+               "Switzerland", "United Kingdom", "Brazil", "South Africa")
+colnames(indices) <- new_names
+View(indices)
+class(indices)
+
+#-----Portafolios
+Indices_Returns <- Return.calculate(indices)[-1,]
+View(Indices_Returns)
+
+
+Eq1_Specs_Port <- portfolio.spec(c())
+##### Add Constraints #####
+Eq1_Specs_Port <- add.constraint(Eq1_Specs_Port,
+                                 type="full_investment")
+Eq1_Specs_Port <- add.constraint(Eq1_Specs_Port,
+                                 type="long_only")
+
+##### Add Objective #####
+Eq1_Specs_Port <- add.objective(Eq1_Specs_Port,
+                                type="risk",
+                                name="StdDev")
+Eq1_Specs_Port <- add.objective(Eq1_Specs_Port,
+                                type='return',
+                                name='mean')
+Eq1_Specs_Port
+
+#------- Pruebas estadisticas
+Estg1 <- basicStats(retornos)
+Estg1
+
+adf_sti <- adf.test(retornos$SP)
+
+adf_sti_table <- as.data.frame(c(adf_sti$p.value))
+adf_sti_table <- adf_sti_table %>%
+  mutate(method=adf_sti[["method"]])
+adf_sti_table <- adf_sti_table %>%
+  mutate(DF=adf_sti[["statistic"]][["Dickey-Fuller"]])
 
 
 
+adf.test(retornos$SP)
+adf.test(retornos$OMX30)
+adf.test(retornos$HSI)
+adf.test(retornos$STI)
+adf.test(retornos$DJI)
+adf.test(retornos$KOSPI)
+adf.test(retornos$DAX)
+
+#### 3.1.2.2 Pruba de Kormogorov-Smirnov 
+*contra distribucion normal, creada con paramaetros de nuestra serie**
+  *Construccion de normal con parametros multivariados de la series*
+  ```{r}
+m <- mean(retornos$SP)
+sd <- sd(retornos$SP)
+len <- length(retornos$SP)
+basenormal <- dnorm(len,m,sd)
+#normal con los parametros de nuestras series
+
+ks.test(retornos$SP, basenormal)
+ks.test(retornos$OMX30, basenormal)
+ks.test(retornos$HSI, basenormal)
+ks.test(retornos$STI, basenormal)
+ks.test(retornos$DJI, basenormal)
+ks.test(retornos$KOSPI, basenormal)
+ks.test(retornos$DAX, basenormal)
+```
 
 
+### 3.1.4 Portafolio Optimizado con Distribución Normal
+### 3.1.5 Portafolio Optimizado con Distribución NIG
+*Construcción de la NIG*
+```{r}
+#Parametros de la NIG
+  NIG<-nigFit(retornos$SP)
+
+#Agrupar parametros en un objeto
+   a<-NIG@fit[["par"]]
+   a<-data.frame(t(a))
+   
+#NIG aleatoria con parametors univariados de nuestra serie
+   r = rnig(len,
+            alpha = a$alpha, 
+            beta = a$beta, 
+            delta = a$delta,
+            mu= a$mu)
+   plot(density(r),
+        col="black",
+        main="NIG Univariada",
+        sub="SP index")
+   
+#Pruba de Kormogorov univariada para NIG
+ks.test(retornos$SP,r)
+```
+
+--------
+```{r}
+#Parametros para NIG Multivariada
+multNIG <- fit.NIGmv(data=retornos,
+                     silent=FALSE)
+
+#Localizar parametros dentor de un obejto
+Mom1NIGm <- multNIG@expected.value
+Mom2NIGm <- multNIG@variance
+
+#Construccion de la funcion NIG con nuestros  parametros de la funcion multivariada
+Mnig <- rghyp(len, multNIG)
+retornos1 <- as.matrix(retornos)
+
+#Prueba cramer de comprobacion
+  #Se buscan similitudes estadisticas
+cramer.test(Mnig,
+            retornos1,
+            conf.level = .95)
+
+
+```
 
 
