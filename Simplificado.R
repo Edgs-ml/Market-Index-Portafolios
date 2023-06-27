@@ -145,39 +145,38 @@ View(df_K3C1)
 
 # Hirarchical Clustering sobre el PC12
 
-hclust.out <- hclust(dist(df_PC12))
-summary(hclust.out)
+#hclust.out <- hclust(dist(df_PC12))
+#summary(hclust.out)
 
-fviz_dend(hclust.out,
-          repel = TRUE)
+#fviz_dend(hclust.out,
+#          repel = TRUE)
 
-hc.out.dend <- as.dendrogram(hclust.out) # Solo para hacer otra forma del dendrograma
+#hc.out.dend <- as.dendrogram(hclust.out) # Solo para hacer otra forma del dendrograma
 
-plot(hc.out.dend)+
-  abline(h=1.4, col = "red")
+#plot(hc.out.dend)+
+#  abline(h=1.4, col = "red")
 
-branch.height <- get_branches_heights(hc.out.dend,
-                                      sort = FALSE,
-                                      decreasing = FALSE,
-                                      include_leaves = FALSE)
-branch.height <- as.data.frame(branch.height)
+#branch.height <- get_branches_heights(hc.out.dend,
+#                                      sort = FALSE,
+#                                      decreasing = FALSE,
+#                                      include_leaves = FALSE)
+#branch.height <- as.data.frame(branch.height)
 
-HC_clusters <- cutree(hclust.out, h = 1.4)
-HC_clusters <- as.data.frame(HC_clusters)
+#HC_clusters <- cutree(hclust.out, h = 1.4)
+#HC_clusters <- as.data.frame(HC_clusters)
 
 # Final Data Frame
-df_PC1234_HC_KM <- cbind(df_PC1234, 
-                         HC_clusters)
-colnames(df_PC1234_HC_KM)[9] <- "HC_h1.4"
+#df_PC1234_HC_KM <- cbind(df_PC1234, 
+#                         HC_clusters)
+#colnames(df_PC1234_HC_KM)[9] <- "HC_h1.4"
 
-df_PC1234_HC_KM <- cbind(df_PC1234_HC_KM,
-                         as.data.frame(kmean1_df_PC12[["cluster"]]))
-colnames(df_PC1234_HC_KM)[10] <- "KM_1"
+#df_PC1234_HC_KM <- cbind(df_PC1234_HC_KM,
+#                         as.data.frame(kmean1_df_PC12[["cluster"]]))
+#colnames(df_PC1234_HC_KM)[10] <- "KM_1"
 
 #Portfolio1 <- df_GDPlog_PC1234_hk_km %>%
 #  filter()
 #View(ch16)
-
 
 
 # Indices
@@ -202,10 +201,37 @@ colnames(indices) <- new_names
 View(indices)
 class(indices)
 
-#------- Pruebas estadisticas
-Estg1 <- basicStats(indices)
-Estg1
+indices_scale <- scale(indices)
 
+plot(indices_scale)
+lines(indices_scale, c)
+## km1
+k3c1 <- c("Canada", "China", "France", "Germany", 
+          "Japan", "Korea, Rep", "Netherlands", "Switzerland",
+          "United Kingdom", "United States")
+k3c1_matrix <- indices[,c("Canada", "China", "France", "Germany", 
+                          "Japan", "Korea, Rep", "Netherlands", "Switzerland",
+                          "United Kingdom", "United States")]
+k3c1_matrix_scaled <- scale(k3c1_matrix)
+## km 2
+k3c2 <- c("Australia", "India", "Italy", "Mexico", "Russian Federation", 
+          "Saudi Arabia", "Spain")
+k3c2_matrix <- indices[,c("Australia", "India", "Italy", "Mexico", 
+                          "Russian Federation", "Saudi Arabia", "Spain")]
+k3c2_matrix_scale <- scale(k3c2_matrix)
+## BRICS
+brics <- c("Brazil", "Russian Federation", "India", "China", "South Africa")
+brics_matrix <- indices[,c("Brazil", "Russian Federation", "India", 
+                           "China", "South Africa")]
+brics_matrix_scale <- scale(brics_matrix)
+
+#------- Pruebas estadisticas
+## Basic Stats
+basic.stat.indices <- basicStats(indices)
+basic.stats.k3c1 <- basicStats(k3c1_matrix)
+basic.stats.k3c2 <- basicStats(k3c2_matrix)
+basic.stats.brics <- basicStats(brics_matrix)
+## adf.test
 lapply(indices, adf.test)
 
 adf_sti_table <- as.data.frame(c(adf_sti$p.value))
@@ -214,18 +240,24 @@ adf_sti_table <- adf_sti_table %>%
 adf_sti_table <- adf_sti_table %>%
   mutate(DF=adf_sti[["statistic"]][["Dickey-Fuller"]])
 
+## Pruba de Kormogorov-Smirnov 
+   #contra distribucion normal, creada con paramaetros de nuestra serie
+   #Construccion de normal con parametros multivariados de la series
 
-#### 3.1.2.2 Pruba de Kormogorov-Smirnov 
-#contra distribucion normal, creada con paramaetros de nuestra serie
-#Construccion de normal con parametros multivariados de la series
+m <- mean(indices$`United States`)
+sd <- sd(indices$`United States`)
+len <- length(indices$`United States`)
+basenormal <- dnorm(len,m,sd) #normal con los parametros de nuestras series
 
-m <- mean(retornos$SP)
-sd <- sd(retornos$SP)
-len <- length(retornos$SP)
-basenormal <- dnorm(len,m,sd)
-#normal con los parametros de nuestras series
 
-ks.test(retornos$SP, basenormal)
+ks.function <- function(serie, base = basenormal){
+  vector.series <- as.vector(serie)
+  ks.test(vector.series, base)
+}
+
+lapply(brics_matrix, ks.function)
+lapply(k3c1_matrix, ks.function)
+lapply(k3c2_matrix, ks.function)
 
 ### 3.1.4 Portafolio Optimizado con Distribución Normal
 ### 3.1.5 Portafolio Optimizado con Distribución NIG
@@ -235,8 +267,8 @@ ks.test(retornos$SP, basenormal)
 NIG <- nigFit(indices$`United States`)
 
 #Agrupar parametros en un objeto
-   a<-NIG@fit[["par"]]
-   a<-data.frame(t(a))
+a <- NIG@fit[["par"]]
+a <- data.frame(t(a))
    
 #NIG aleatoria con parametors univariados de nuestra serie
 r = rnig(len,
@@ -251,7 +283,7 @@ plot(density(r),
      sub="SP index")
    
 #Pruba de Kormogorov univariada para NIG
-ks.test(retornos$SP, r)
+ks.test(as.vector(indices$Australia), r)
 
 
 #--------
@@ -275,15 +307,24 @@ cramer.test(Mnig,
             conf.level = .95)
 
 #-----Portafolios
-brics <- c("Brazil", "Russian Federation", "India", "China", "South Africa")
-brics_matrix <- indices[,c("Brazil", "Russian Federation", "India", 
-                           "China", "South Africa")]
 brics_Specs_Portfolio <- portfolio.spec(brics)
+k3c1_Specs_Portfolio <- portfolio.spec(k3c1)
+k3c2_Specs_Portfolio <- portfolio.spec(k3c2)
 ##### Add Constraints #####
 brics_Specs_Portfolio <- add.constraint(brics_Specs_Portfolio,
                                         type="full_investment")
 brics_Specs_Portfolio <- add.constraint(brics_Specs_Portfolio,
                                         type="long_only")
+
+k3c1_Specs_Portfolio <- add.constraint(k3c1_Specs_Portfolio,
+                                       type="full_investment")
+k3c1_Specs_Portfolio <- add.constraint(k3c1_Specs_Portfolio,
+                                        type="long_only")
+
+k3c2_Specs_Portfolio <- add.constraint(k3c2_Specs_Portfolio,
+                                       type="full_investment")
+k3c2_Specs_Portfolio <- add.constraint(k3c2_Specs_Portfolio,
+                                       type="long_only")
 
 ##### Add Objective #####
 brics_Specs_Portfolio <- add.objective(brics_Specs_Portfolio,
@@ -295,8 +336,30 @@ brics_Specs_Portfolio <- add.objective(brics_Specs_Portfolio,
 brics_Specs_Portfolio
 
 
+k3c1_Specs_Portfolio <- add.objective(k3c1_Specs_Portfolio,
+                                      type="risk",
+                                      name="StdDev")
+k3c1_Specs_Portfolio <- add.objective(k3c1_Specs_Portfolio,
+                                      type='return',
+                                      name='mean')
+k3c1_Specs_Portfolio
+
+
+k3c2_Specs_Portfolio <- add.objective(k3c2_Specs_Portfolio,
+                                      type="risk",
+                                      name="StdDev")
+k3c2_Specs_Portfolio <- add.objective(k3c2_Specs_Portfolio,
+                                      type='return',
+                                      name='mean')
+k3c2_Specs_Portfolio
+
+
 brics_Optimum_Portfolio <- optimize.portfolio(brics_matrix, 
                                               brics_Specs_Portfolio) 
+k3c1_Optimum_Portfolio <- optimize.portfolio(k3c1_matrix,
+                                           k3c1_Specs_Portfolio)
+k3c2_Optimum_Portfolio <- optimize.portfolio(k3c2_matrix,
+                                           k3c2_Specs_Portfolio)
 #en caso de que no converja, usar ", optimize_method = random"
 
 chart.Weights(brics_Optimum_Portfolio)
@@ -305,7 +368,7 @@ chart.Weights(brics_Optimum_Portfolio)
 # nuevo objeto para los rendimientos del port
 bricRendOptPort <- Return.portfolio(brics_matrix,
                                     extractWeights(brics_Optimum_Portfolio))
-plot(density(RendOptPort))
+plot(density(bricRendOptPort))
 
 VaR(RendOptPort)*sqrt(1)*1000000
 
