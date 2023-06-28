@@ -1,0 +1,30 @@
+"0","# Indices de capital de los paises, bajados de Bloomberg
+indices <- read_excel(""Indices_km.xlsx"", 
+                      sheet = ""Hoja1"",
+                      col_types = c(""date"", 
+                                    ""numeric"", ""numeric"", ""numeric"", ""numeric"", ""numeric"", 
+                                    ""numeric"", ""numeric"", ""numeric"", ""numeric"", ""numeric"", 
+                                    ""numeric"", ""numeric"", ""numeric"", ""numeric"", ""numeric"", 
+                                    ""numeric"", ""numeric"", ""numeric"", ""numeric""))
+"
+"2","Warning: Expecting date in A2 / R2C1: got 'Date'"
+"2","Warning: Expecting numeric in B2 / R2C2: got 'S&p'"
+"2","Warning: Expecting numeric in C2 / R2C3: got 'AS Index'"
+"2","Warning: Expecting numeric in D2 / R2C4: got 'MXIN Index'"
+"2","Warning: Expecting numeric in E2 / R2C5: got 'ITLMS Index'"
+"2","Warning: Expecting numeric in F2 / R2C6: got 'MEXBOL Index'"
+"2","Warning: Expecting numeric in G2 / R2C7: got 'IMOEX Index'"
+"2","Warning: Expecting numeric in H2 / R2C8: got 'SASEIDX Index'"
+"2","Warning: Expecting numeric in I2 / R2C9: got 'IBEX Index'"
+"2","Warning: Expecting numeric in J2 / R2C10: got 'SPTSX Index'"
+"2","Warning: Expecting numeric in K2 / R2C11: got 'HSI Index'"
+"2","Warning: Expecting numeric in L2 / R2C12: got 'CAC Index'"
+"2","Warning: Expecting numeric in M2 / R2C13: got 'DAX Index'"
+"2","Warning: Expecting numeric in N2 / R2C14: got 'NKY Index'"
+"2","Warning: Expecting numeric in O2 / R2C15: got 'KOSPI Index'"
+"2","Warning: Expecting numeric in P2 / R2C16: got 'AEX Index'"
+"2","Warning: Expecting numeric in Q2 / R2C17: got 'SMI Index'"
+"2","Warning: Expecting numeric in R2 / R2C18: got 'TOP40 Index'"
+"2","Warning: Expecting numeric in S2 / R2C19: got 'IBOV Index'"
+"2","Warning: Expecting numeric in T2 / R2C20: got 'TOP40 Index'"
+"2","New names:"

@@ -1,0 +1,5 @@
+"0","column_pdf <- apply(matrix_data, 2, function(col) dnorm(col, mean(col), sd(col), length(col)))
+"
+"2","Error in apply(matrix_data, 2, function(col) dnorm(col, mean(col), sd(col),  : 
+  object 'matrix_data' not found
+"

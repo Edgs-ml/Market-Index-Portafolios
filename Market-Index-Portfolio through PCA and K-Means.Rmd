@@ -1,3 +1,12 @@
+---
+title: "Market-Index-Portfolio through PCA and K-Means"
+author: "Edgar Sigfrido Soto Aparicio"
+date: "2023-06-28"
+output: html_document
+---
+
+# Librerias
+```{r}
 library(tidyverse)
 library(readxl)
 library(textshape) #"Tools for Reshaping Text". Usado en columns_to_rownames
@@ -34,8 +43,10 @@ library(NbClust)
 library(dendextend)
 library(xts)
 library(zoo)
+```
 
 # Creación de las Data Frames
+```{r}
 df <- read_excel("APLHA/ALPHA_1/ALPHA_1.1/1.1.1PCA_Codes/Criterios-Unificado (Datos para PCA).xlsx")
 df <- df[,-6]
 df_plot <- df #Data Frame para hacer gráficas descriptivas
@@ -46,16 +57,20 @@ colnames(df_plot)[5] = "GDP"
 
 df <- column_to_rownames(df_plot, 
                          loc = 1)
+```
 
 # Graficas descriptivas de las variables
+```{r}
 df_plot %>%
   ggplot(aes(x=GDP))+
   geom_histogram(bins=100)+
   geom_label(data = df_plot %>%
                filter(GDP>13), aes(x=GDP,y=Country, 
                                         label=Country))
+```
 
-# PCA con df_gdplog
+# PCA
+```{r}
 pca_df <- prcomp(df, 
                  center = TRUE, 
                  scale. = TRUE)
@@ -78,8 +93,11 @@ View(df_PC1234)
 df_PC12 <- as.data.frame(pca_df$x)
 df_PC12 <- df_PC12[,1:2]
 View(df_PC12)
+```
 
 # Kmeans sobre el PCA
+## Primer kmeans sobre PC12
+```{r}
 NbClust(df_PC12,
         distance = "euclidean",
         method = "kmeans")
@@ -90,8 +108,10 @@ kmean1_df_PC12 <- kmeans(df_PC12,
 
 fviz_cluster(kmean1_df_PC12, 
              data = df_PC12)
+```
 
 ## Segundo kmeans sobre PC12
+```{r}
 df_K1C1 <- cbind(df_PC12, 
                  as.data.frame(kmean1_df_PC12$cluster))
 colnames(df_K1C1)[3] = "K1C1"
@@ -111,7 +131,10 @@ kmean2_df_PC12 <- kmeans(df_K1C1,
 fviz_cluster(kmean2_df_PC12, 
              data = df_K1C1)
 
+```
+
 ## Tercer kmeans sobre PC12
+```{r}
 df_K2C2 <- cbind(df_K1C1,
                  as.data.frame(kmean2_df_PC12$cluster))
 colnames(df_K2C2)[3] = "K2C2"
@@ -142,44 +165,41 @@ df_K3C1 <- df_K3C1 %>%
   filter(K3C1==1)
 df_K3C1 <- df_K3C1[,-3]
 View(df_K3C1)
+```
 
-# Hirarchical Clustering sobre el PC12
+intento de chat gpt. borrar mas tarde
+```{r}
+calculate_column_means <- function(matrix_data) {
+  column_means <- colMeans(matrix_data)
+  return(column_means)
+}
+calculate_column_means(k3c2_matrix)
 
-#hclust.out <- hclust(dist(df_PC12))
-#summary(hclust.out)
+#---
 
-#fviz_dend(hclust.out,
-#          repel = TRUE)
-
-#hc.out.dend <- as.dendrogram(hclust.out) # Solo para hacer otra forma del dendrograma
-
-#plot(hc.out.dend)+
-#  abline(h=1.4, col = "red")
-
-#branch.height <- get_branches_heights(hc.out.dend,
-#                                      sort = FALSE,
-#                                      decreasing = FALSE,
-#                                      include_leaves = FALSE)
-#branch.height <- as.data.frame(branch.height)
-
-#HC_clusters <- cutree(hclust.out, h = 1.4)
-#HC_clusters <- as.data.frame(HC_clusters)
-
-# Final Data Frame
-#df_PC1234_HC_KM <- cbind(df_PC1234, 
-#                         HC_clusters)
-#colnames(df_PC1234_HC_KM)[9] <- "HC_h1.4"
-
-#df_PC1234_HC_KM <- cbind(df_PC1234_HC_KM,
-#                         as.data.frame(kmean1_df_PC12[["cluster"]]))
-#colnames(df_PC1234_HC_KM)[10] <- "KM_1"
-
-#Portfolio1 <- df_GDPlog_PC1234_hk_km %>%
-#  filter()
-#View(ch16)
+create_base_norm_data <- function(matrix_data) {
+  col_names <- colnames(matrix_data)
+  
+  column_pdf <- apply(matrix_data, 2, function(col) dnorm(col, mean(col), 
+                                                          sd(col), 
+                                                          length(col)))
+  
+  base_norm_df <- data.frame(t(column_pdf))
+  colnames(base_norm_df) <- col_names
+  rownames(base_norm_df) <- "base.norm"
+  return(base_norm_df)
+}
+create_base_norm_data(indices)
 
 
-# Indices
+
+column_pdf <- apply(matrix_data, 2, function(col) dnorm(col, mean(col), sd(col), length(col)))
+```
+
+
+# Indices (indices será el benchmark)
+```{r}
+# Indices de capital de los paises, bajados de Bloomberg
 indices <- read_excel("Indices_km.xlsx", 
                       sheet = "Hoja1",
                       col_types = c("date", 
@@ -201,37 +221,118 @@ colnames(indices) <- new_names
 View(indices)
 class(indices)
 
+indices <- indices
 indices_scale <- scale(indices)
-
 plot(indices_scale)
+```
 
-## km1
+## Time frames (para el benchmark)
+```{r}
+# pre pandemia
+to_pre.crisis.to.pre.pandemic <- as.POSIXct("2020-02-27")
+indices_pre.crisis.to.pre.pandemic <- indices[index(indices) <= to_pre.crisis.to.pre.pandemic]
+indices_pre.crisis.to.pre.pandemic_scale <- scale(indices_pre.crisis.to.pre.pandemic)
+# pre crisis financiera
+to_pre.crisis <- as.POSIXct("2007-06-30")
+indices_pre.crisis <- indices[index(indices) <= to_pre.crisis]
+indices_pre.crisis_scale <- scale(indices_pre.crisis)
+# entre crisis y crisis
+from_pos.crisis <- as.POSIXct("2011-06-30")
+to_pre.pandemic <- as.POSIXct("2020-02-27")
+indices_pos.crisis_pre.pandemic <- indices[index(indices) >= from_pos.crisis & index(indices) <= to_pre.pandemic]
+indices_pos.crisis_pre.pandemic_scale <- scale(indices_pos.crisis_pre.pandemic)
+# pandemic
+from_pandemic <- as.POSIXct("2020-02-27")
+to_pandemic <- as.POSIXct("2023-04-09")
+indices_pandemic <- indices[index(indices) >= from_pandemic & index(indices) <= to_pandemic]
+indices_pandemic_scale <- scale(indices_pandemic)
+# pos pandemic
+from_pos.pandemic <- as.POSIXct("2023-04-10")
+indices_pos.pandemic <- indices[index(indices) >= from_pos.pandemic]
+indices_pos.pandemic_scale <- scale(indices_pos.pandemic)
+```
+
+## Portafolios de los grupos de K-Means y BRICS
+
+### K3C1 time frames
+```{r}
 k3c1 <- c("Canada", "China", "France", "Germany", 
           "Japan", "Korea, Rep", "Netherlands", "Switzerland",
           "United Kingdom", "United States")
+# Generral Time Frame
 k3c1_matrix <- indices[,c("Canada", "China", "France", "Germany", 
                           "Japan", "Korea, Rep", "Netherlands", "Switzerland",
                           "United Kingdom", "United States")]
-k3c1_matrix_scaled <- scale(k3c1_matrix)
-## km 2
+
+# k3c1 pre crisis
+k3c1_matrix_pre.crisis <- indices_pre.crisis[,c("Canada", "China", "France", "Germany", "Japan", "Korea, Rep", "Netherlands", "Switzerland", "United Kingdom", "United States")]
+
+# k3c1 between crisis and crisis
+k3c1_matrix_pos.crisis_pre.pandemic <- indices_pos.crisis_pre.pandemic[,c("Canada", "China", "France", "Germany", "Japan", "Korea, Rep", "Netherlands", "Switzerland", "United Kingdom", "United States")]
+
+# pandemic
+k3c1_matrix_pandemic <- indices_pandemic[,c("Canada", "China", "France", "Germany", "Japan", "Korea, Rep", "Netherlands", "Switzerland", "United Kingdom", "United States")]
+
+# pos pandemic
+k3c1_matrix_pos.pandemic <- indices_pos.pandemic[,c("Canada", "China", "France", "Germany", "Japan", "Korea, Rep", "Netherlands", "Switzerland", "United Kingdom", "United States")]
+```
+
+### K3C2 time frames
+```{r}
 k3c2 <- c("Australia", "India", "Italy", "Mexico", "Russian Federation", 
           "Saudi Arabia", "Spain")
+# General
 k3c2_matrix <- indices[,c("Australia", "India", "Italy", "Mexico", 
                           "Russian Federation", "Saudi Arabia", "Spain")]
 k3c2_matrix_scale <- scale(k3c2_matrix)
-## BRICS
+
+# k3c2 pre crisis
+k3c2_matrix_pre.crisis <- indices_pre.crisis[,c("Australia", "India", "Italy", "Mexico", "Russian Federation", "Saudi Arabia", "Spain")]
+
+# k3c2 between crisis and crisis
+k3c2_matrix_pos.crisis_pre.pandemic <- indices_pos.crisis_pre.pandemic[,c("Australia", "India", "Italy", "Mexico", 
+                          "Russian Federation", "Saudi Arabia", "Spain")]
+
+# k3c2 pandemic
+k3c2_matrix_pandemic <- indices_pandemic[,c("Australia", "India", "Italy", "Mexico", "Russian Federation", "Saudi Arabia", "Spain")]
+
+# k3c2 pos pandemic
+k3c2_matrix_pos.pandemic <- indices_pos.pandemic[,c("Australia", "India", "Italy", "Mexico", "Russian Federation", "Saudi Arabia", "Spain")]
+```
+
+### BRICS
+```{r}
 brics <- c("Brazil", "Russian Federation", "India", "China", "South Africa")
+# General
 brics_matrix <- indices[,c("Brazil", "Russian Federation", "India", 
                            "China", "South Africa")]
 brics_matrix_scale <- scale(brics_matrix)
+# BRICS pre crisis
+indices_pre.crisis
 
-#------- Pruebas estadisticas
+# BRICS between crisis and crisis
+indices_pos.crisis_pre.pandemic
+
+# BRICS pandemic
+indices_pandemic
+
+# BRICS pos pandemic
+indices_pos.pandemic
+```
+
+
+# Pruebas estadisticas
+
 ## Basic Stats
+```{r}
 basic.stat.indices <- basicStats(indices)
 basic.stats.k3c1 <- basicStats(k3c1_matrix)
 basic.stats.k3c2 <- basicStats(k3c2_matrix)
 basic.stats.brics <- basicStats(brics_matrix)
-## adf.test
+```
+
+## adf.test for Stationarity
+```{r}
 adf.apply <- apply(indices,
                    MARGIN = 2,
                    FUN = adf.test)
@@ -245,10 +346,30 @@ adf.table %>%
   ggplot(aes(x=Country, y=`p-value`))+
   geom_col()
 
-## Pruba de Kormogorov-Smirnov 
+```
 
+## ks.test univariadas normal y nig
+```{r}
+ks.univariate.test.function <- function(serie, cdf){
+  vector.series <- as.vector(serie)
+  ks.test(vector.series, cdf)
+}
 
-### contra distribucion normal, creada con paramaetros de nuestra serie
+ks.univ.norm_indices <- apply(indices,
+                              MARGIN = 2,
+                              FUN = ks.univariate.test.function, 
+                              cdf = "pnorm")
+
+ks.univ.nig_indices <- apply(indices,
+                             MARGIN = 2,
+                             FUN = ks.univariate.test.function, 
+                             cdf = "pnig")
+```
+
+------
+Creacion de las bases para la prueba K-S univariada normal
+Esta ahora es opcional, ya que hay una mejor forma
+```{r}
 m_United.States <- mean(indices$`United States`)
 sd_United.States <- sd(indices$`United States`)
 len_United.States <- length(indices$`United States`)
@@ -381,8 +502,10 @@ len_South.Africa <- length(indices$`South Africa`)
 base.normal_South.Africa <- dnorm(len_South.Africa,
                             m_South.Africa,
                             sd_South.Africa)
+```
 
-#### ks tests
+Pruebas de K-S univariadas normlaes
+```{r}
 ks_United.States <- ks.test(as.vector(indices$`United States`),
                             base.normal_United.States)
 ks_United.States <- as.data.frame(ks_United.States[["p.value"]])
@@ -458,58 +581,24 @@ ks_Brazil <- as.data.frame(ks_Brazil[["p.value"]])
 ks_South.Africa <- ks.test(as.vector(indices$`South Africa`),
                      base.normal_South.Africa)
 ks_South.Africa <- as.data.frame(ks_South.Africa[["p.value"]])
+```
+-------
 
 
-ks.brics <- cbind(ks_Brazil,
-                  ks_Russian.Federation,
-                  ks_India,
-                  ks_China,
-                  ks_South.Africa)
-colnames(ks.brics) <- brics
-rownames(ks.brics) <- "p.value"
-
-ks_k3c1 <- cbind(ks_Canada,
-                 ks_China,
-                 ks_France,
-                 ks_Germany,
-                 ks_Japan,
-                 ks_Korea.Rep,
-                 ks_Netherlands,
-                 ks_Switzerland,
-                 ks_United.Kingdom,
-                 ks_United.States)
-colnames(ks.k3c1) <- k3c1
-rownames(ks.k3c1) <- "p.value"
-
-ks_k3c2 <- cbind(ks_Australia,
-                 ks_India,
-                 ks_Italy,
-                 ks_Mexico,
-                 ks_Russian.Federation,
-                 ks_Saudi.Arabia,
-                 ks_Spain)
-colnames(ks_k3c2) <- k3c2
-rownames(ks_k3c2) <- "p.value"
-
-#Construccion de normal con parametros multivariados de la series
-base.normal_United.States
-
-
-## Construcción de la NIG
-### Parametros de la NIG
-
-NIG <- nigFit(indices$`United States`)
+```{r}
+#Parametros de la NIG
+NIG_United.States <- nigFit(indices$`United States`)
 
 #Agrupar parametros en un objeto
-a <- NIG@fit[["par"]]
+a <- NIG_United.States@fit[["par"]]
 a <- data.frame(t(a))
    
 #NIG aleatoria con parametors univariados de nuestra serie
-r = rnig(len,
-         alpha = a$alpha, 
-         beta = a$beta, 
-         delta = a$delta,
-         mu= a$mu)
+r <- rnig(len_United.States,
+          alpha = a$alpha, 
+          beta = a$beta,
+          delta = a$delta,
+          mu = a$mu)
 
 plot(density(r),
      col="black",
@@ -517,86 +606,66 @@ plot(density(r),
      sub="SP index")
    
 #Pruba de Kormogorov univariada para NIG
-ks.test(as.vector(indices$Australia), r)
+ks.test(as.vector(indices$`United States`), "pnorm")
 
+```
 
-#--------
+# Portfolios Normal Distribution
 
-#Parametros para NIG Multivariada
-multNIG <- fit.NIGmv(data = indices,
-                     silent = FALSE)
+## Benchmark
+```{r echo=FALSE include = FALSE}
+Specs_Port_Norm_indices <- portfolio.spec(indices)
 
-#Localizar parametros dentor de un obejto
-Mom1NIGm <- multNIG@expected.value
-Mom2NIGm <- multNIG@variance
-
-#Construccion de la funcion NIG con nuestros  parametros de la funcion multivariada
-Mnig <- rghyp(len, multNIG)
-retornos1 <- as.matrix(retornos)
-
-#Prueba cramer de comprobacion
-  #Se buscan similitudes estadisticas
-cramer.test(Mnig,
-            retornos1,
-            conf.level = .95)
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Portafolios ---------------------------
-brics_Specs_Portfolio <- portfolio.spec(brics)
-k3c1_Specs_Portfolio <- portfolio.spec(k3c1)
-k3c2_Specs_Portfolio <- portfolio.spec(k3c2)
 ##### Add Constraints #####
-brics_Specs_Portfolio <- add.constraint(brics_Specs_Portfolio,
-                                        type="full_investment")
-brics_Specs_Portfolio <- add.constraint(brics_Specs_Portfolio,
-                                        type="long_only")
-
+Specs_Port_Norm_indices <- add.constraint(Specs_Port_Norm_indices,
+                                          type = "full_investment")
+Specs_Port_Norm_indices <- add.constraint(Specs_Port_Norm_indices,
+                                          type = "long_only")
 
 ##### Add Objective #####
-brics_Specs_Portfolio <- add.objective(brics_Specs_Portfolio,
-                                       type="risk",
-                                       name="StdDev")
-brics_Specs_Portfolio <- add.objective(brics_Specs_Portfolio,
-                                       type='return',
-                                       name='mean')
-brics_Specs_Portfolio
+Specs_Port_Norm_indices <- add.objective(Specs_Port_Norm_indices,
+                                         type = "risk",
+                                         name = "StdDev")
+Specs_Port_Norm_indices <- add.objective(Specs_Port_Norm_indices,
+                                         type = 'return',
+                                         name = 'mean')
+Specs_Port_Norm_indices
+
+##### Optimization #####
+Optimized_Port_Norm_indices <- optimize.portfolio(indices,
+                                                  Specs_Port_Norm_indices,
+                                                  trace = TRUE)
+
+chart.Weights(Optimized_Port_Norm_indices, 
+              plot.type = "barplot")
+Weights_Optimized_Port_Norm_indices <- extractWeights(Optimized_Port_Norm_indices)
+sum(Weights_Optimized_Port_Norm_indices)
+```
 
 
 
 
-brics_Optimum_Portfolio <- optimize.portfolio(brics_matrix, 
-                                              brics_Specs_Portfolio) 
-k3c1_Optimum_Portfolio <- optimize.portfolio(k3c1_matrix,
-                                           k3c1_Specs_Portfolio)
-k3c2_Optimum_Portfolio <- optimize.portfolio(k3c2_matrix,
-                                           k3c2_Specs_Portfolio)
-#en caso de que no converja, usar ", optimize_method = random"
-
-chart.Weights(brics_Optimum_Portfolio)
-
-
-# nuevo objeto para los rendimientos del port
-bricRendOptPort <- Return.portfolio(brics_matrix,
-                                    extractWeights(brics_Optimum_Portfolio))
-plot(density(bricRendOptPort))
-
-VaR(RendOptPort)*sqrt(1)*1000000
-
-charts.PerformanceSummary(RendOptPort)
 
 
 
-table.AnnualizedReturns(RendOptPort) #por default esta anualizado
-table.AnnualizedReturns(Rend)
+Portfolio analysis Normal Distribution
+```{r}
+Return_opt_NORM <- Return.portfolio(Portafolio_NORM,
+                                    W_R_NORM)
+
+table.AnnualizedReturns(Return_opt_NORM,
+                        scale = 252,
+                        geometric = FALSE)
+
+Return.cumulative(Return_opt_NORM,
+                  geometric = FALSE)
+
+chart.RiskReward(Optimized_Port_NORM,
+                 risk.col = 'StdDev',
+                 return.col = 'mean',
+                 chart.assets = T)
+```
+
+
+
 
