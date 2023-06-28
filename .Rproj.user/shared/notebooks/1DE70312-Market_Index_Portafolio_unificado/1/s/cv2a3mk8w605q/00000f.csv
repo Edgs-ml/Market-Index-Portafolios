@@ -1,29 +1,11 @@
 "0","Serie_de_datos_el_bueno_ <- read_excel(""~/Documents/GitHub/Market-Index-Portafolios/iNDICES.xlsx"", "
-"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
-  invalid first argument
-"
 "0","    col_types = c(""date"", ""numeric"", ""numeric"", "
-"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
-  invalid first argument
-"
 "0","        ""numeric"", ""numeric"", ""numeric"", ""numeric"", ""numeric""))"
 "2","Warning: Expecting numeric in B5388 / R5388C2: got '#N/A N/A'"
 "2","Warning: Expecting numeric in C5443 / R5443C3: got '#N/A N/A'"
 "2","Warning: Expecting numeric in C5457 / R5457C3: got '#N/A N/A'"
 "2","Warning: Expecting numeric in C5463 / R5463C3: got '#N/A N/A'"
 "2","Warning: Expecting numeric in C5480 / R5480C3: got '#N/A N/A'"
-"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
-  invalid first argument
-"
 "0","g1 <- Serie_de_datos_el_bueno_"
-"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
-  invalid first argument
-"
 "0","colnames(g1)<-c(""Fecha"", ""SP"", ""OMX30"",""HSI"",""STI"",""DJI"",""KOSPI"", ""DAX"")"
-"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
-  invalid first argument
-"
 "0","g1<-textshape::column_to_rownames(g1,loc=1)"
-"2","Error in exists(cacheKey, where = .rs.WorkingDataEnv, inherits = FALSE) : 
-  invalid first argument
-"

@@ -232,38 +232,232 @@ basic.stats.k3c1 <- basicStats(k3c1_matrix)
 basic.stats.k3c2 <- basicStats(k3c2_matrix)
 basic.stats.brics <- basicStats(brics_matrix)
 ## adf.test
-lapply(indices, adf.test)
+adf.apply <- apply(indices,
+                   MARGIN = 2,
+                   FUN = adf.test)
+adf.table <- read_excel("adf.table.xlsx", sheet = "Sheet2")
+names(adf.table)[names(adf.table) == '...1'] <- 'Country'
 
-adf_sti_table <- as.data.frame(c(adf_sti$p.value))
-adf_sti_table <- adf_sti_table %>%
-  mutate(method=adf_sti[["method"]])
-adf_sti_table <- adf_sti_table %>%
-  mutate(DF=adf_sti[["statistic"]][["Dickey-Fuller"]])
+adf.table <- adf.table %>%
+  arrange(desc(`p-value`))
+
+adf.table %>%
+  ggplot(aes(x=Country, y=`p-value`))+
+  geom_col()
 
 ## Pruba de Kormogorov-Smirnov 
-   #contra distribucion normal, creada con paramaetros de nuestra serie
-   #Construccion de normal con parametros multivariados de la series
 
-m <- mean(indices$`United States`)
-sd <- sd(indices$`United States`)
-len <- length(indices$`United States`)
-basenormal <- dnorm(len,m,sd) #normal con los parametros de nuestras series
+### contra distribucion normal, creada con paramaetros de nuestra serie
+m_United.States <- mean(indices$`United States`)
+sd_United.States <- sd(indices$`United States`)
+len_United.States <- length(indices$`United States`)
+base.normal_United.States <- dnorm(len_United.States,
+                                   m_United.States,
+                                   sd_United.States)
+
+m_Australia <- mean(indices$Australia)
+sd_Australia <- sd(indices$Australia)
+len_Australia <- length(indices$Australia)
+base.normal_Australia <- dnorm(len_Australia,
+                               m_Australia,
+                               sd_Australia)
+
+m_India <- mean(indices$India)
+sd_India <- sd(indices$India)
+len_India <- length(indices$India)
+base.normal_India <- dnorm(len_India,
+                               m_India,
+                               sd_India)
+ks_India <- ks.test(as.vector(indices$India),
+                        base.normal_India)
+ks_India <- as.data.frame(ks_India[["p.value"]])
+
+m_Italy <- mean(indices$Italy)
+sd_Italy <- sd(indices$Italy)
+len_Italy <- length(indices$Italy)
+base.normal_Italy <- dnorm(len_Italy,
+                           m_Italy,
+                           sd_Italy)
+ks_Italy <- ks.test(as.vector(indices$Italy),
+                    base.normal_Italy)
+
+m_Mexico <- mean(indices$Mexico)
+sd_Mexico <- sd(indices$Mexico)
+len_Mexico <- length(indices$Mexico)
+base.normal_Mexico <- dnorm(len_Mexico,
+                           m_Mexico,
+                           sd_Mexico)
+ks_Mexico <- ks.test(as.vector(indices$Mexico),
+                    base.normal_Mexico)
+
+m_Russian.Federation <- mean(indices$`Russian Federation`)
+sd_Russian.Federation <- sd(indices$`Russian Federation`)
+len_Russian.Federation <- length(indices$`Russian Federation`)
+base.normal_Russian.Federation <- dnorm(len_Russian.Federation,
+                            m_Russian.Federation,
+                            sd_Russian.Federation)
+ks_Russian.Federation <- ks.test(as.vector(indices$`Russian Federation`),
+                     base.normal_Russian.Federation)
+ks_Russian.Federation <- as.data.frame(ks_Russian.Federation[["p.value"]])
+
+m_Saudi.Arabia <- mean(indices$`Saudi Arabia`)
+sd_Saudi.Arabia <- sd(indices$`Saudi Arabia`)
+len_Saudi.Arabia <- length(indices$`Saudi Arabia`)
+base.normal_Saudi.Arabia <- dnorm(len_Saudi.Arabia,
+                                        m_Saudi.Arabia,
+                                        sd_Saudi.Arabia)
+ks_Saudi.Arabia <- ks.test(as.vector(indices$`Saudi Arabia`),
+                                 base.normal_Saudi.Arabia)
+
+m_Spain <- mean(indices$Spain)
+sd_Spain <- sd(indices$Spain)
+len_Spain <- length(indices$Spain)
+base.normal_Spain <- dnorm(len_Spain,
+                           m_Spain,
+                           sd_Spain)
+ks_Spain <- ks.test(as.vector(indices$Spain),
+                           base.normal_Spain)
+
+m_Canada <- mean(indices$Canada)
+sd_Canada <- sd(indices$Canada)
+len_Canada <- length(indices$Canada)
+base.normal_Canada <- dnorm(len_Canada,
+                           m_Canada,
+                           sd_Canada)
+ks_Canada <- ks.test(as.vector(indices$Canada),
+                    base.normal_Canada)
+
+m_China <- mean(indices$China)
+sd_China <- sd(indices$China)
+len_China <- length(indices$China)
+base.normal_China <- dnorm(len_China,
+                            m_China,
+                            sd_China)
+ks_China <- ks.test(as.vector(indices$China),
+                     base.normal_China)
+ks_China <- as.data.frame(ks_China[["p.value"]])
+
+m_France <- mean(indices$France)
+sd_France <- sd(indices$France)
+len_France <- length(indices$France)
+base.normal_France <- dnorm(len_France,
+                           m_France,
+                           sd_France)
+ks_France <- ks.test(as.vector(indices$France),
+                    base.normal_France)
+
+m_Germany <- mean(indices$Germany)
+sd_Germany <- sd(indices$Germany)
+len_Germany <- length(indices$Germany)
+base.normal_Germany <- dnorm(len_Germany,
+                            m_Germany,
+                            sd_Germany)
+ks_Germany <- ks.test(as.vector(indices$Germany),
+                     base.normal_Germany)
+
+m_Japan <- mean(indices$Japan)
+sd_Japan <- sd(indices$Japan)
+len_Japan <- length(indices$Japan)
+base.normal_Japan <- dnorm(len_Japan,
+                             m_Japan,
+                             sd_Japan)
 
 
-ks.function <- function(serie, base = basenormal){
-  vector.series <- as.vector(serie)
-  ks.test(vector.series, base)
-}
+m_Korea.Rep <- mean(indices$`Korea, Rep`)
+sd_Korea.Rep <- sd(indices$`Korea, Rep`)
+len_Korea.Rep <- length(indices$`Korea, Rep`)
+base.normal_Korea.Rep <- dnorm(len_Korea.Rep,
+                           m_Korea.Rep,
+                           sd_Korea.Rep)
 
-lapply(brics_matrix, ks.function)
-lapply(k3c1_matrix, ks.function)
-lapply(k3c2_matrix, ks.function)
+m_Netherlands <- mean(indices$Netherlands)
+sd_Netherlands <- sd(indices$Netherlands)
+len_Netherlands <- length(indices$Netherlands)
+base.normal_Netherlands <- dnorm(len_Netherlands,
+                               m_Netherlands,
+                               sd_Netherlands)
 
-### 3.1.4 Portafolio Optimizado con Distribución Normal
-### 3.1.5 Portafolio Optimizado con Distribución NIG
-#Construcción de la NIG
 
-#Parametros de la NIG
+m_Switzerland <- mean(indices$Switzerland)
+sd_Switzerland <- sd(indices$Switzerland)
+len_Switzerland <- length(indices$Switzerland)
+base.normal_Switzerland <- dnorm(len_Switzerland,
+                                 m_Switzerland,
+                                 sd_Switzerland)
+
+m_United.Kingdom <- mean(indices$`United Kingdom`)
+sd_United.Kingdom <- sd(indices$`United Kingdom`)
+len_United.Kingdom <- length(indices$`United Kingdom`)
+base.normal_United.Kingdom <- dnorm(len_United.Kingdom,
+                                 m_United.Kingdom,
+                                 sd_United.Kingdom)
+
+m_Brazil <- mean(indices$Brazil)
+sd_Brazil <- sd(indices$Brazil)
+len_Brazil <- length(indices$Brazil)
+base.normal_Brazil <- dnorm(len_Brazil,
+                            m_Brazil,
+                            sd_Brazil)
+
+m_South.Africa <- mean(indices$`South Africa`)
+sd_South.Africa <- sd(indices$`South Africa`)
+len_South.Africa <- length(indices$`South Africa`)
+base.normal_South.Africa <- dnorm(len_South.Africa,
+                            m_South.Africa,
+                            sd_South.Africa)
+
+
+#### ks tests
+ks_United.States <- ks.test(as.vector(indices$`United States`),
+                            base.normal_United.States)
+ks_United.States <- as.data.frame(ks_United.States[["p.value"]])
+
+ks_Australia <- ks.test(as.vector(indices$Australia),
+                        base.normal_Australia)
+
+
+
+ks_Japan <- ks.test(as.vector(indices$Japan),
+                    base.normal_Japan)
+
+ks_Japan <- ks.test(as.vector(indices$`Korea, Rep`),
+                    base.normal_Korea.Rep)
+
+ks_Netherlands <- ks.test(as.vector(indices$Netherlands),
+                          base.normal_Netherlands)
+
+ks_ <- ks.test(as.vector(indices$`Korea, Rep`),
+                    base.normal_Korea.Rep)
+
+ks_United.Kingdom <- ks.test(as.vector(indices$`United Kingdom`),
+                             base.normal_United.Kingdom)
+#…
+ks_Brazil <- ks.test(as.vector(indices$Brazil),
+                     base.normal_Brazil)
+ks_Brazil <- as.data.frame(ks_Brazil[["p.value"]])
+ks_South.Africa <- ks.test(as.vector(indices$`South Africa`),
+                     base.normal_South.Africa)
+ks_South.Africa <- as.data.frame(ks_South.Africa[["p.value"]])
+
+
+
+
+
+ks.brics <- cbind(ks_Brazil,
+                  ks_Russian.Federation,
+                  ks_India,
+                  ks_China,
+                  ks_South.Africa)
+colnames(ks.brics) <- brics
+rownames(ks.brics) <- "p.value"
+
+#Construccion de normal con parametros multivariados de la series
+base.normal_United.States
+
+
+## Construcción de la NIG
+### Parametros de la NIG
+
 NIG <- nigFit(indices$`United States`)
 
 #Agrupar parametros en un objeto
@@ -289,8 +483,8 @@ ks.test(as.vector(indices$Australia), r)
 #--------
 
 #Parametros para NIG Multivariada
-multNIG <- fit.NIGmv(data=retornos,
-                     silent=FALSE)
+multNIG <- fit.NIGmv(data = indices,
+                     silent = FALSE)
 
 #Localizar parametros dentor de un obejto
 Mom1NIGm <- multNIG@expected.value
@@ -306,7 +500,19 @@ cramer.test(Mnig,
             retornos1,
             conf.level = .95)
 
-#-----Portafolios
+
+
+
+
+
+
+
+
+
+
+
+
+# Portafolios ---------------------------
 brics_Specs_Portfolio <- portfolio.spec(brics)
 k3c1_Specs_Portfolio <- portfolio.spec(k3c1)
 k3c2_Specs_Portfolio <- portfolio.spec(k3c2)
@@ -316,15 +522,6 @@ brics_Specs_Portfolio <- add.constraint(brics_Specs_Portfolio,
 brics_Specs_Portfolio <- add.constraint(brics_Specs_Portfolio,
                                         type="long_only")
 
-k3c1_Specs_Portfolio <- add.constraint(k3c1_Specs_Portfolio,
-                                       type="full_investment")
-k3c1_Specs_Portfolio <- add.constraint(k3c1_Specs_Portfolio,
-                                        type="long_only")
-
-k3c2_Specs_Portfolio <- add.constraint(k3c2_Specs_Portfolio,
-                                       type="full_investment")
-k3c2_Specs_Portfolio <- add.constraint(k3c2_Specs_Portfolio,
-                                       type="long_only")
 
 ##### Add Objective #####
 brics_Specs_Portfolio <- add.objective(brics_Specs_Portfolio,
@@ -336,22 +533,6 @@ brics_Specs_Portfolio <- add.objective(brics_Specs_Portfolio,
 brics_Specs_Portfolio
 
 
-k3c1_Specs_Portfolio <- add.objective(k3c1_Specs_Portfolio,
-                                      type="risk",
-                                      name="StdDev")
-k3c1_Specs_Portfolio <- add.objective(k3c1_Specs_Portfolio,
-                                      type='return',
-                                      name='mean')
-k3c1_Specs_Portfolio
-
-
-k3c2_Specs_Portfolio <- add.objective(k3c2_Specs_Portfolio,
-                                      type="risk",
-                                      name="StdDev")
-k3c2_Specs_Portfolio <- add.objective(k3c2_Specs_Portfolio,
-                                      type='return',
-                                      name='mean')
-k3c2_Specs_Portfolio
 
 
 brics_Optimum_Portfolio <- optimize.portfolio(brics_matrix, 

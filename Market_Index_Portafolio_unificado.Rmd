@@ -528,7 +528,7 @@ adf.test(retornos$DAX)
 m <- mean(retornos$SP)
 sd <- sd(retornos$SP)
 len <- length(retornos$SP)
-basenormal <- dnorm(len,m,sd)
+basenormal <- pnorm(len,m,sd)
 #normal con los parametros de nuestras series
 
 ks.test(retornos$SP, basenormal)
