@@ -1,0 +1,17 @@
+"0","df_K1C1 <- cbind(df_PC12, "
+"0","                 as.data.frame(kmean1_df_PC12$cluster))"
+"0","colnames(df_K1C1)[3] = ""K1C1"""
+"0","df_K1C1 <- df_K1C1 %>%"
+"0","  filter(K1C1==3)"
+"0","df_K1C1 <- df_K1C1[,-3]"
+"0","View(df_K1C1)"
+"0","#---- 2do kmeans"
+"0","NbClust(df_K1C1,"
+"0","        distance = ""euclidean"","
+"0","        method = ""kmeans"")"
+"1","*** : The Hubert index is a graphical method of determining the number of clusters.
+                In the plot of Hubert index, we seek a significant knee that corresponds to a 
+                significant increase of the value of the measure i.e the significant peak in Hubert
+                index second differences plot. 
+ 
+"

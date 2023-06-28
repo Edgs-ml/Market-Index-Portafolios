@@ -1,0 +1,6 @@
+"0","kmean1_df_PC12 <- kmeans(df_PC12, "
+"0","                           centers = 3,"
+"0","                           iter.max = 50) #creamos objeto de kmeans con la df principal"
+"0",""
+"0","fviz_cluster(kmean1_df_PC12, "
+"0","             data = df_PC12)"
