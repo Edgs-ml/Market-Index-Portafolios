@@ -167,36 +167,6 @@ df_K3C1 <- df_K3C1[,-3]
 View(df_K3C1)
 ```
 
-intento de chat gpt. borrar mas tarde
-```{r}
-calculate_column_means <- function(matrix_data) {
-  column_means <- colMeans(matrix_data)
-  return(column_means)
-}
-calculate_column_means(k3c2_matrix)
-
-#---
-
-create_base_norm_data <- function(matrix_data) {
-  col_names <- colnames(matrix_data)
-  
-  column_pdf <- apply(matrix_data, 2, function(col) dnorm(col, mean(col), 
-                                                          sd(col), 
-                                                          length(col)))
-  
-  base_norm_df <- data.frame(t(column_pdf))
-  colnames(base_norm_df) <- col_names
-  rownames(base_norm_df) <- "base.norm"
-  return(base_norm_df)
-}
-create_base_norm_data(indices)
-
-
-
-column_pdf <- apply(matrix_data, 2, function(col) dnorm(col, mean(col), sd(col), length(col)))
-```
-
-
 # Indices (indices será el benchmark) y Time Frames
 ```{r echo=FALSE, warning=FALSE}
 # Indices de capital de los paises, bajados de Bloomberg
@@ -668,7 +638,7 @@ Specs_Port_Norm_indices
 # Optimization #####
 Optimized_Port_Norm_indices <- optimize.portfolio(indices,
                                                   Specs_Port_Norm_indices,
-                                                  trace = TRUE)
+                                                  optimize_method = "random")
 # Weights optimization #####
 chart.Weights(Optimized_Port_Norm_indices, 
               plot.type = "barplot")
