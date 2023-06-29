@@ -1,1 +1,0 @@
-{"frames":[{"func":"apply(matrix_data, 2, function(col) dnorm(col, mean(col), sd(col), \n    length(col)))","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in apply(matrix_data, 2, function(col) dnorm(col, mean(col), sd(col),  : \n  object 'matrix_data' not found\n"}

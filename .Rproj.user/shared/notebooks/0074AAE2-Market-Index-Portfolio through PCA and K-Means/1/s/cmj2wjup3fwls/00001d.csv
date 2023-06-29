@@ -1,0 +1,6 @@
+"0","chart.Weights(W_R_eqt,
+              plot.type=""barplot"")
+"
+"2","Error in UseMethod(""chart.Weights"") : 
+  no applicable method for 'chart.Weights' applied to an object of class ""c('double', 'numeric')""
+"

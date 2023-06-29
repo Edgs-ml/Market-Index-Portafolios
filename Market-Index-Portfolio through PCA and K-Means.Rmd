@@ -43,6 +43,7 @@ library(NbClust)
 library(dendextend)
 library(xts)
 library(zoo)
+library(fPortfolio)
 ```
 
 # Creación de las Data Frames
@@ -618,42 +619,116 @@ ks.test(as.vector(indices$`United States`), "pnorm")
 
 ### Benchmark
 ```{r echo=FALSE include = FALSE}
-Specs_Port_Norm_indices <- portfolio.spec(indices)
+indices_name <- colnames(indices)
+init.portfolio <- portfolio.spec(assets = indices_name)
 
 # Add Constraints #####
-Specs_Port_Norm_indices <- add.constraint(Specs_Port_Norm_indices,
-                                          type = "full_investment")
-Specs_Port_Norm_indices <- add.constraint(Specs_Port_Norm_indices,
-                                          type = "long_only")
+init.portfolio <- add.constraint(portfolio = init.portfolio,
+                                  type="weight_sum",
+                                 min_sum = 0.99,
+                                 max_sum = 1.01)
+init.portfolio <- add.constraint(portfolio = init.portfolio,
+                                  type = "long_only")
 
 # Add Objective #####
-Specs_Port_Norm_indices <- add.objective(Specs_Port_Norm_indices,
-                                         type = "risk",
-                                         name = "StdDev")
-Specs_Port_Norm_indices <- add.objective(Specs_Port_Norm_indices,
-                                         type = 'return',
-                                         name = 'mean')
-Specs_Port_Norm_indices
-
+init.portfolio <- add.objective(portfolio = init.portfolio,
+                                  type = "risk",
+                                  name = "sd")
+init.portfolio <- add.objective(portfolio = init.portfolio,
+                                type = 'return',
+                                name = 'mean')
+init.portfolio
 # Optimization #####
-Optimized_Port_Norm_indices <- optimize.portfolio(indices,
-                                                  Specs_Port_Norm_indices,
-                                                  optimize_method = "random")
-# Weights optimization #####
-chart.Weights(Optimized_Port_Norm_indices, 
-              plot.type = "barplot")
+indices_e.w.p. <- equal.weight(R = indices_scale,
+                        portfolio = init.portfolio)
 
-Weights_Optimized_Port_Norm_indices <- extractWeights(Optimized_Port_Norm_indices)
+W_R_eqt <- extractWeights(indices_e.w.p.)
 
-sum(Weights_Optimized_Port_Norm_indices)
+Optimized_Port_Norm_indices <- optimize.portfolio(R = indices_scale,
+                                                  portfolio = init.portfolio,
+                                                  optimize_method = "random",
+                                                  trace = TRUE)
+chart.Weights(Optimized_Port_Norm_indices,
+              plot.type="barplot")
+W_R_NORM <- extractWeights(Optimized_Port_Norm_indices)
+sum(W_R_NORM)
 ```
 
 ### K3C1
+```{r}
+k3c1.init.portfolio <- portfolio.spec(assets = k3c1)
+
+# Add Constraints #####
+k3c1.init.portfolio <- add.constraint(portfolio = k3c1.init.portfolio,
+                                  type="weight_sum",
+                                 min_sum = 0.99,
+                                 max_sum = 1.01)
+k3c1.init.portfolio <- add.constraint(portfolio = k3c1.init.portfolio,
+                                  type = "long_only")
+
+# Add Objective #####
+k3c1.init.portfolio <- add.objective(portfolio = k3c1.init.portfolio,
+                                  type = "risk",
+                                  name = "sd")
+k3c1.init.portfolio <- add.objective(portfolio = k3c1.init.portfolio,
+                                type = 'return',
+                                name = 'mean')
+k3c1.init.portfolio
+# Optimization #####
+k3c1.indices_e.w.p. <- equal.weight(R = scale(k3c1_matrix),
+                        portfolio = k3c1.init.portfolio)
+```
 
 ### K3C2
+```{r}
+k3c2.init.portfolio <- portfolio.spec(assets = k3c2)
+
+# Add Constraints #####
+k3c2.init.portfolio <- add.constraint(portfolio = k3c2.init.portfolio,
+                                  type="weight_sum",
+                                 min_sum = 0.99,
+                                 max_sum = 1.01)
+k3c2.init.portfolio <- add.constraint(portfolio = k3c2.init.portfolio,
+                                  type = "long_only")
+
+# Add Objective #####
+k3c2.init.portfolio <- add.objective(portfolio = k3c2.init.portfolio,
+                                  type = "risk",
+                                  name = "sd")
+k3c2.init.portfolio <- add.objective(portfolio = k3c2.init.portfolio,
+                                type = 'return',
+                                name = 'mean')
+k3c2.init.portfolio
+# Optimization #####
+k3c2.indices_e.w.p. <- equal.weight(R = k3c2_matrix_scale,
+                        portfolio = k3c2.init.portfolio)
+```
 
 ### BRICS
 
+```{r}
+bric.init.portfolio <- portfolio.spec(assets = brics)
+
+# Add Constraints #####
+bric.init.portfolio <- add.constraint(portfolio = bric.init.portfolio,
+                                  type="weight_sum",
+                                 min_sum = 0.99,
+                                 max_sum = 1.01)
+bric.init.portfolio <- add.constraint(portfolio = bric.init.portfolio,
+                                  type = "long_only")
+
+# Add Objective #####
+bric.init.portfolio <- add.objective(portfolio = bric.init.portfolio,
+                                  type = "risk",
+                                  name = "sd")
+bric.init.portfolio <- add.objective(portfolio = bric.init.portfolio,
+                                type = 'return',
+                                name = 'mean')
+bric.init.portfolio
+# Optimization #####
+brics.indices_e.w.p. <- equal.weight(R = scale(brics_matrix),
+                        portfolio = bric.init.portfolio)
+```
 
 ## Portfolios NIG Distribution
 
@@ -668,21 +743,69 @@ sum(Weights_Optimized_Port_Norm_indices)
 ### BRICS
 
 # Portfolio analysis !
-```{r}
-Return_opt_NORM <- Return.portfolio(Portafolio_NORM,
-                                    W_R_NORM)
+## Benchmark
 
-table.AnnualizedReturns(Return_opt_NORM,
+```{r}
+Return_indices_norm <- Return.portfolio(R = indices_scale,
+                        portfolio = init.portfolio)
+
+
+table.AnnualizedReturns(Return_indices_norm,
                         scale = 252,
+                        Rf = rfr,
                         geometric = FALSE)
 
-Return.cumulative(Return_opt_NORM,
-                  geometric = FALSE)
+Return.cumulative(Return_indices_norm,
+                  geometric = TRUE)
 
-chart.RiskReward(Optimized_Port_NORM,
-                 risk.col = 'StdDev',
+chart.RiskReward(object = indices_scale,
+                 risk.col = 'sd',
                  return.col = 'mean',
-                 chart.assets = T)
+                 chart.assets = FALSE)
+```
+
+## K3C1
+```{r}
+Return_k3c1_norm <- Return.portfolio(R = scale(k3c1_matrix),
+                        portfolio = k3c1.init.portfolio)
+
+
+table.AnnualizedReturns(Return_k3c1_norm,
+                        scale = 252,
+                        Rf = rfr,
+                        geometric = FALSE)
+
+Return.cumulative(Return_k3c1_norm,
+                  geometric = TRUE)
+```
+
+## K3C2
+```{r}
+Return_k3c2_norm <- Return.portfolio(R = k3c2_matrix_scale,
+                        portfolio = k3c2.init.portfolio)
+
+
+table.AnnualizedReturns(Return_k3c2_norm,
+                        scale = 252,
+                        Rf = rfr,
+                        geometric = FALSE)
+
+Return.cumulative(Return_k3c2_norm,
+                  geometric = TRUE)
+```
+## BRICS
+```{r}
+Return_bric_norm <- Return.portfolio(R = scale(brics_matrix),
+                        portfolio = bric.init.portfolio)
+
+
+table.AnnualizedReturns(Return_bric_norm,
+                        scale = 252,
+                        Rf = rfr,
+                        geometric = FALSE)
+
+Return.cumulative(Return_bric_norm,
+                  geometric = TRUE)
 ```
 
 
