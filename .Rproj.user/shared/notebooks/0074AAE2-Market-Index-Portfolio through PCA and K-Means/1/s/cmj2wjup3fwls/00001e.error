@@ -1,1 +1,0 @@
-{"frames":[{"func":"chart.Weights(W_R_eqt, plot.type = \"barplot\")","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in UseMethod(\"chart.Weights\") : \n  no applicable method for 'chart.Weights' applied to an object of class \"c('double', 'numeric')\"\n"}

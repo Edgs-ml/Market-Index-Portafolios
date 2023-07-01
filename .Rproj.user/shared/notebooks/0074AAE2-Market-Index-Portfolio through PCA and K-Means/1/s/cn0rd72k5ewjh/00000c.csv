@@ -1,0 +1,7 @@
+"0","#--------pre crisis financiera - indices_pre.crisis"
+"0","to_pre.crisis <- as.POSIXct(""2007-06-30"")"
+"0","indices_pre.crisis <- indices[index(indices) <= to_pre.crisis]"
+"0",""
+"0","indices_pre.crisis_scale <- scale(indices_pre.crisis)"
+"0",""
+"0","plot(indices_pre.crisis_scale)"

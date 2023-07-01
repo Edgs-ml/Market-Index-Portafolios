@@ -1,0 +1,8 @@
+"0","df_plot %>%"
+"0","  ggplot(aes(x=GDP))+"
+"0","  geom_histogram(bins=100)+"
+"0","  geom_label(data = df_plot %>%"
+"0","               filter(GDP>13), aes(x=GDP,y=Country, "
+"0","                                        label=Country))"
+"2","Error in filter(., GDP > 13) : object 'GDP' not found
+"

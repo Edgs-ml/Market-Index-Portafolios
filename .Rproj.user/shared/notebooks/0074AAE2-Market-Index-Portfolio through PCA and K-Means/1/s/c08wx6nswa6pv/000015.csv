@@ -1,0 +1,11 @@
+"0","VaR(Return_indices_norm)
+"
+"2","VaR calculation produces unreliable result (risk over 100%) for column: 1 : 1.84699670822865
+"
+"1","   "
+"1"," portfolio.returns"
+"1","
+VaR"
+"1","                -1"
+"1","
+"

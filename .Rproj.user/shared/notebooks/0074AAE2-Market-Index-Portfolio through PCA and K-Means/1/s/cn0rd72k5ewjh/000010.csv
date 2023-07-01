@@ -1,0 +1,6 @@
+"0","#--------pandemic - indices_pandemic"
+"0","from_pandemic <- as.POSIXct(""2020-02-27"")"
+"0","to_pandemic <- as.POSIXct(""2023-04-09"")"
+"0","indices_pandemic <- indices[index(indices) >= from_pandemic & index(indices) <= to_pandemic]"
+"0","indices_pandemic_scale <- scale(indices_pandemic)"
+"0","plot(indices_pandemic_scale)"

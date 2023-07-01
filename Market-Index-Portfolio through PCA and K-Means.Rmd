@@ -190,6 +190,8 @@ new_names <- c("United States", "Australia", "India", "Italy", "Mexico",
                "Switzerland", "United Kingdom", "Brazil", "South Africa", "US.T.30Y")
 colnames(indices) <- new_names
 rfr <- indices$US.T.30Y
+indices.rfr <- indices
+indices.rfr <- scale(indices.rfr)
 indices <- indices[,-20]
 View(indices)
 class(indices)
@@ -204,25 +206,37 @@ plot(indices_scale)
 #--------pre pandemia - indices_pre.crisis.to.pre.pandemic
 to_pre.crisis.to.pre.pandemic <- as.POSIXct("2020-02-27")
 indices_pre.crisis.to.pre.pandemic <- indices[index(indices) <= to_pre.crisis.to.pre.pandemic]
+
 indices_pre.crisis.to.pre.pandemic_scale <- scale(indices_pre.crisis.to.pre.pandemic)
+
+plot(indices_pre.crisis.to.pre.pandemic_scale)
 #--------pre crisis financiera - indices_pre.crisis
 to_pre.crisis <- as.POSIXct("2007-06-30")
 indices_pre.crisis <- indices[index(indices) <= to_pre.crisis]
+
 indices_pre.crisis_scale <- scale(indices_pre.crisis)
+
+plot(indices_pre.crisis_scale)
 #--------entre crisis y crisis - indices_pos.crisis_pre.pandemic
 from_pos.crisis <- as.POSIXct("2011-06-30")
 to_pre.pandemic <- as.POSIXct("2020-02-27")
+
 indices_pos.crisis_pre.pandemic <- indices[index(indices) >= from_pos.crisis & index(indices) <= to_pre.pandemic]
+
 indices_pos.crisis_pre.pandemic_scale <- scale(indices_pos.crisis_pre.pandemic)
+
+plot(indices_pos.crisis_pre.pandemic_scale)
 #--------pandemic - indices_pandemic
 from_pandemic <- as.POSIXct("2020-02-27")
 to_pandemic <- as.POSIXct("2023-04-09")
 indices_pandemic <- indices[index(indices) >= from_pandemic & index(indices) <= to_pandemic]
 indices_pandemic_scale <- scale(indices_pandemic)
+plot(indices_pandemic_scale)
 #--------pos pandemic - indices_pos.pandemic
 from_pos.pandemic <- as.POSIXct("2023-04-10")
 indices_pos.pandemic <- indices[index(indices) >= from_pos.pandemic]
 indices_pos.pandemic_scale <- scale(indices_pos.pandemic)
+plot(indices_pos.pandemic_scale)
 ```
 
 ## Time frames rfr
@@ -230,15 +244,20 @@ indices_pos.pandemic_scale <- scale(indices_pos.pandemic)
 #--------pre pandemia - indices_pre.crisis.to.pre.pandemic
 rfr_pre.crisis.to.pre.pandemic <- rfr[index(rfr) <= to_pre.crisis.to.pre.pandemic]
 rfr_pre.crisis.to.pre.pandemic_scale <- scale(rfr_pre.crisis.to.pre.pandemic)
+plot(rfr_pre.crisis.to.pre.pandemic)
 #--------pre crisis financiera - indices_pre.crisis
 rfr_pre.crisis <- rfr[index(rfr) <= to_pre.crisis]
 rfr_pre.crisis_scale <- scale(rfr_pre.crisis)
+plot(rfr_pre.crisis_scale)
 #--------entre crisis y crisis - indices_pos.crisis_pre.pandemic
 rfr_pos.crisis_pre.pandemic <- rfr[index(rfr) >= from_pos.crisis & index(rfr) <= to_pre.pandemic]
 rfr_pos.crisis_pre.pandemic_scale <- scale(rfr_pos.crisis_pre.pandemic)
+plot(rfr_pos.crisis_pre.pandemic_scale)
 #--------pandemic - indices_pandemic
 rfr_pandemic <- rfr[index(rfr) >= from_pandemic & index(rfr) <= to_pandemic]
 rfr_pandemic_scale <- scale(rfr_pandemic)
+
+plot(rfr_pandemic)
 #--------pos pandemic - indices_pos.pandemic
 rfr_pos.pandemic <- rfr[index(rfr) >= from_pos.pandemic]
 rfr_pos.pandemic_scale <- scale(rfr_pos.pandemic)
@@ -644,14 +663,16 @@ indices_e.w.p. <- equal.weight(R = indices_scale,
 
 W_R_eqt <- extractWeights(indices_e.w.p.)
 
+# pesos NO-IGUALES ##
+
 Optimized_Port_Norm_indices <- optimize.portfolio(R = indices_scale,
                                                   portfolio = init.portfolio,
                                                   optimize_method = "random",
                                                   trace = TRUE)
 chart.Weights(Optimized_Port_Norm_indices,
               plot.type="barplot")
-W_R_NORM <- extractWeights(Optimized_Port_Norm_indices)
-sum(W_R_NORM)
+indices_Weights <- extractWeights(Optimized_Port_Norm_indices)
+sum(indices_Weights)
 ```
 
 ### K3C1
@@ -677,6 +698,9 @@ k3c1.init.portfolio
 # Optimization #####
 k3c1.indices_e.w.p. <- equal.weight(R = scale(k3c1_matrix),
                         portfolio = k3c1.init.portfolio)
+
+sdffgg <- as.matrix(k3c1.indices_e.w.p.[["weights"]])
+
 ```
 
 ### K3C2
@@ -702,6 +726,8 @@ k3c2.init.portfolio
 # Optimization #####
 k3c2.indices_e.w.p. <- equal.weight(R = k3c2_matrix_scale,
                         portfolio = k3c2.init.portfolio)
+sdffg <- as.matrix(k3c2.indices_e.w.p.[["weights"]])
+
 ```
 
 ### BRICS
@@ -742,7 +768,7 @@ brics.indices_e.w.p. <- equal.weight(R = scale(brics_matrix),
 
 ### BRICS
 
-# Portfolio analysis !
+# Portfolio analysis
 ## Benchmark
 
 ```{r}
@@ -752,31 +778,35 @@ Return_indices_norm <- Return.portfolio(R = indices_scale,
 
 table.AnnualizedReturns(Return_indices_norm,
                         scale = 252,
-                        Rf = rfr,
+                        Rf = indices.rfr[,20],
                         geometric = FALSE)
 
 Return.cumulative(Return_indices_norm,
                   geometric = TRUE)
 
-chart.RiskReward(object = indices_scale,
-                 risk.col = 'sd',
-                 return.col = 'mean',
-                 chart.assets = FALSE)
+VaR(Return_indices_norm)
 ```
 
 ## K3C1
 ```{r}
-Return_k3c1_norm <- Return.portfolio(R = scale(k3c1_matrix),
+Return_k3c1_norm <- Return.portfolio(R = k3c1_matrix,
                         portfolio = k3c1.init.portfolio)
 
 
 table.AnnualizedReturns(Return_k3c1_norm,
                         scale = 252,
-                        Rf = rfr,
+                        Rf = indices.rfr[,20],
                         geometric = FALSE)
 
 Return.cumulative(Return_k3c1_norm,
                   geometric = TRUE)
+
+sdffgg
+
+table.AnnualizedReturns(Return_k3c2_norm,
+                        scale = 252,
+                        Rf = indices.rfr[,20],
+                        geometric = FALSE)
 ```
 
 ## K3C2
@@ -787,12 +817,34 @@ Return_k3c2_norm <- Return.portfolio(R = k3c2_matrix_scale,
 
 table.AnnualizedReturns(Return_k3c2_norm,
                         scale = 252,
-                        Rf = rfr,
+                        Rf = indices.rfr[,20],
                         geometric = FALSE)
 
 Return.cumulative(Return_k3c2_norm,
                   geometric = TRUE)
+
+VaR(k3c2_matrix, p=0.95, 
+    method = "gaussian",
+    portfolio_method = "component")
+
+varRisk(k3c2_matrix,
+        sdffg,
+        alpha = 0.05)
+
+var.portfolio(k3c2_matrix, sdffg)
 ```
+
+```{r}
+plot(Return_indices_norm)
+plot(Return_k3c1_norm)
+plot(Return_k3c2_norm)
+
+resultados <- merge(Return_indices_norm, Return_k3c1_norm, Return_k3c2_norm)
+colnames(resultados) <- c("Benchmark", "Grupo 1 K-Means", "Grupo 2 K-Means")
+
+plot.xts(resultados, main = "Comparación de resultados normalizados", col = c("blue", "red", "green"), multi.panel = TRUE, lwd = 2, screens = c(1, 1, 1), ylab = "Retornos normalizados")
+```
+
 ## BRICS
 ```{r}
 Return_bric_norm <- Return.portfolio(R = scale(brics_matrix),
@@ -808,6 +860,12 @@ Return.cumulative(Return_bric_norm,
                   geometric = TRUE)
 ```
 
+
+```{r}
+VaR.indices <- VaR(indices, p = 0.95, method = "gaussian")
+VaR.indices <- var.portfolio(indices,
+                             W_R_eqt)
+```
 
 
 

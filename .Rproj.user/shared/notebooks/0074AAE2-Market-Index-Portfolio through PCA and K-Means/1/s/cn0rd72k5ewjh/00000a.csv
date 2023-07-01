@@ -1,0 +1,7 @@
+"0","#--------pre pandemia - indices_pre.crisis.to.pre.pandemic"
+"0","to_pre.crisis.to.pre.pandemic <- as.POSIXct(""2020-02-27"")"
+"0","indices_pre.crisis.to.pre.pandemic <- indices[index(indices) <= to_pre.crisis.to.pre.pandemic]"
+"0",""
+"0","indices_pre.crisis.to.pre.pandemic_scale <- scale(indices_pre.crisis.to.pre.pandemic)"
+"0",""
+"0","plot(indices_pre.crisis.to.pre.pandemic_scale)"

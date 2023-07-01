@@ -1,0 +1,8 @@
+"0","Return_k3c2_norm <- Return.portfolio(R = k3c2_matrix_scale,"
+"0","                        portfolio = k3c2.init.portfolio)"
+"0",""
+"0",""
+"0","table.AnnualizedReturns(Return_k3c2_norm,"
+"0","                        scale = 252,"
+"0","                        Rf = indices.rfr[,20],"
+"0","                        geometric = FALSE)"
