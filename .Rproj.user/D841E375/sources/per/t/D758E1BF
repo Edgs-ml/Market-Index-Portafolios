@@ -1,0 +1,28 @@
+{
+    "id": "D758E1BF",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1690919982639.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "id": "8837a53a24d54b5cb5e66dfb4c73e09a",
+        "name": "ks.univ.norm_indices",
+        "title": "ks.univ.norm_indices",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 0,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1690919982639,
+    "read_only": false,
+    "read_only_alternatives": []
+}
